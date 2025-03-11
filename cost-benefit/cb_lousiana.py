@@ -1,4 +1,5 @@
 ## Cargamos paqueterías
+# pip install git+https://github.com/milocortes/costs_benefits_ssp.git@main
 from costs_benefits_ssp.cb_calculate import CostBenefits
 import numpy as np
 import pandas as pd 
@@ -10,7 +11,9 @@ from costs_benefits_ssp.model.cb_data_model import TXTable,CostFactor,Transforma
 import polars as pl
 
 ##---- Definimos directorios
-DIR_PATH = "/home/milo/Documents/egtp/SISEPUEDE/CB/ejecuciones_cb_paquete/lousiana"
+#DIR_PATH = "/home/milo/Documents/egtp/SISEPUEDE/CB/ejecuciones_cb_paquete/lousiana"
+
+DIR_PATH = os.getcwd()
 
 build_path = lambda PATH  : os.path.abspath(os.path.join(*PATH))
 
