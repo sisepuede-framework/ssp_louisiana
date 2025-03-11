@@ -31,7 +31,7 @@ OUTPUT_LOUSIANA_QA_PATH = build_path([DIR_PATH, "cb_resultados", "qa"])
 OUTPUT_LOUSIANA_CB_PATH = build_path([DIR_PATH, "cb_resultados", "cb"])
 
 ## Cargamos los datos
-#ssp_data = pd.read_csv(os.path.join(SSP_RESULTS_PATH, "louisiana.csv"))
+ssp_data = pd.read_csv(os.path.join(SSP_RESULTS_PATH, "louisiana.csv"))
 att_primary = pd.read_csv(os.path.join(SSP_RESULTS_PATH, "ATTRIBUTE_PRIMARY.csv"))
 att_strategy = pd.read_csv(os.path.join(SSP_RESULTS_PATH, "ATTRIBUTE_STRATEGY.csv"))
 
