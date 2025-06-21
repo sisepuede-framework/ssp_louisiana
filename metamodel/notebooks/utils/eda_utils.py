@@ -169,6 +169,13 @@ class EDAUtils:
                     to_drop.add(colname)
         print(f"Columns to drop due to multicollinearity (threshold={threshold}): {to_drop}")
         return list(to_drop)
+    
+    @staticmethod
+    def plot_correlation_matrix(df, figsize=(12, 10), cmap='coolwarm'):
+        plt.figure(figsize=figsize)
+        sns.heatmap(df.corr(), annot=True, fmt=".2f", cmap=cmap, square=True, cbar_kws={"shrink": .8})
+        plt.title("Correlation Matrix")
+        plt.show()
 
 
 class DataCleaningUtils:
