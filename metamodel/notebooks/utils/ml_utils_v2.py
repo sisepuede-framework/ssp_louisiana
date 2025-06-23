@@ -15,7 +15,7 @@ from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-
+from sklearn.multioutput import MultiOutputRegressor
 
 class EmissionsPredictionPipeline:
     def __init__(
@@ -285,3 +285,208 @@ class EmissionsPredictionPipeline:
         self.cross_validate(cv_splits=cv_splits)
         if create_plots:
             self.create_plots()
+
+
+class MultiOutputEmissionsPipeline:
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        targets: list[str],
+        test_size: float = 0.2,
+        random_state: int = 42,
+    ):
+        self.df = df
+        self.targets = targets
+        self.test_size = test_size
+        self.random_state = random_state
+
+        # train/test
+        self.X_train = self.X_test = None
+        self.y_train = self.y_test = None
+
+        # best XGB params
+        self.best_params: dict = {}
+        # whether to log-transform all targets
+        self._log_transform = False
+
+        # holds pipelines keyed by name
+        self.pipelines: dict[str, Pipeline] = {}
+
+    def preprocess(self):
+        X = self.df.drop(columns=self.targets)
+        y = self.df[self.targets]
+        (
+            self.X_train,
+            self.X_test,
+            self.y_train,
+            self.y_test,
+        ) = train_test_split(
+            X, y, test_size=self.test_size, random_state=self.random_state
+        )
+
+    def tune_hyperparameters(self, n_iter: int = 30, cv_splits: int = 5):
+        """Randomized search on an XGB wrapped in MultiOutputRegressor."""
+        param_dist = {
+            "estimator__n_estimators": [100, 200, 500, 1000],
+            "estimator__learning_rate": [0.005, 0.01, 0.05, 0.1],
+            "estimator__max_depth": [3, 5, 7, 9, 11],
+            "estimator__subsample": [0.5, 0.7, 1.0],
+            "estimator__colsample_bytree": [0.3, 0.5, 0.7, 1.0],
+            "estimator__min_child_weight": [1, 2, 5, 10],
+            "estimator__gamma": [0, 0.1, 0.3, 0.5],
+        }
+        base = xgb.XGBRegressor(
+            random_state=self.random_state, tree_method="hist"
+        )
+        mor = MultiOutputRegressor(base)
+        pipe = Pipeline([("model", mor)])
+        kf = KFold(
+            n_splits=cv_splits, shuffle=True, random_state=self.random_state
+        )
+        search = RandomizedSearchCV(
+            estimator=pipe,
+            param_distributions={f"model__{k}": v for k, v in param_dist.items()},
+            n_iter=n_iter,
+            scoring="neg_mean_absolute_error",
+            cv=kf,
+            random_state=self.random_state,
+            n_jobs=-1,
+            verbose=1,
+        )
+
+        # choose y for tuning
+        y_tune = np.log1p(self.y_train) if self._log_transform else self.y_train
+        search.fit(self.X_train, y_tune)
+        # strip off "model__estimator__" prefix
+        self.best_params = {
+            k.replace("model__estimator__", ""): v
+            for k, v in search.best_params_.items()
+        }
+        print("Best XGB hyperparameters:", self.best_params)
+
+    def train_models(self, log_transform: bool = False):
+        """Build & fit all multi‐output pipelines."""
+        if self.X_train is None:
+            raise RuntimeError("Call preprocess() first.")
+        self._log_transform = log_transform
+
+        # 1) XGB
+        xgb_base = xgb.XGBRegressor(
+            **self.best_params,
+            random_state=self.random_state,
+            tree_method="hist",
+        )
+        self.pipelines["XGB"] = Pipeline(
+            [("model", MultiOutputRegressor(xgb_base))]
+        )
+
+        # 2) Baselines
+        self.pipelines["MeanBaseline"] = Pipeline(
+            [("model", MultiOutputRegressor(DummyRegressor(strategy="mean")))]
+        )
+        self.pipelines["MedianBaseline"] = Pipeline(
+            [("model", MultiOutputRegressor(DummyRegressor(strategy="median")))]
+        )
+
+        # 3) RandomForest supports multi-output natively
+        self.pipelines["RandomForest"] = Pipeline(
+            [
+                (
+                    "model",
+                    RandomForestRegressor(
+                        random_state=self.random_state, n_jobs=-1
+                    ),
+                )
+            ]
+        )
+
+        # 4) ElasticNet wrapper
+        self.pipelines["ElasticNet"] = Pipeline(
+            [("model", MultiOutputRegressor(ElasticNet(
+                random_state=self.random_state)))]
+        )
+
+        # fit
+        for name, pipe in self.pipelines.items():
+            y_fit = np.log1p(self.y_train) if (name == "XGB" and self._log_transform) else self.y_train
+            pipe.fit(self.X_train, y_fit)
+
+    def evaluate_models(self):
+        """Print MAE, RMSE, R², SMAPE *per target*."""
+        for name, pipe in self.pipelines.items():
+            y_pred = pipe.predict(self.X_test)
+            if name == "XGB" and self._log_transform:
+                y_pred = np.expm1(y_pred)
+
+            print(f"\n=== {name} ===")
+            for i, tgt in enumerate(self.targets):
+                y_true_i = self.y_test.iloc[:, i]
+                y_pred_i = y_pred[:, i]
+
+                mae = mean_absolute_error(y_true_i, y_pred_i)
+                rmse = np.sqrt(mean_squared_error(y_true_i, y_pred_i))
+                r2 = r2_score(y_true_i, y_pred_i)
+                denom = (np.abs(y_true_i) + np.abs(y_pred_i)) / 2
+                smape = np.mean(
+                    np.where(denom == 0, 0, np.abs(y_true_i - y_pred_i) / denom)
+                ) * 100
+
+                print(
+                    f"{tgt:30s} → MAE: {mae:.4f}, "
+                    f"RMSE: {rmse:.4f}, R²: {r2:.4f}, SMAPE: {smape:.1f}%"
+                )
+
+    def cross_validate(self, cv_splits: int = 5):
+        """CV on the train set; multi-output metrics averaged by default."""
+        scoring = {
+            "MAE": "neg_mean_absolute_error",
+            "R2": "r2",
+            "RMSE": "neg_root_mean_squared_error",
+        }
+        kf = KFold(
+            n_splits=cv_splits, shuffle=True, random_state=self.random_state
+        )
+
+        for name, pipe in self.pipelines.items():
+            y_cv = np.log1p(self.y_train) if (name == "XGB" and self._log_transform) else self.y_train
+            results = cross_validate(
+                pipe,
+                self.X_train,
+                y_cv,
+                cv=kf,
+                scoring=scoring,
+                n_jobs=-1,
+            )
+            print(f"\n=== CV Results for {name} ===")
+            for metric, scores in results.items():
+                if metric.startswith("test_"):
+                    val = -scores.mean() if "neg" in scoring[metric[5:]] else scores.mean()
+                    print(f"{metric}: {val:.4f} ± {scores.std():.4f}")
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    def run(
+        self,
+        tune: bool = True,
+        log_transform: bool = False,
+        cv_splits: int = 5,
+    ):
+        self._log_transform = log_transform
+        self.preprocess()
+        if tune:
+            self.tune_hyperparameters()
+        self.train_models(log_transform=log_transform)
+        self.evaluate_models()
+        self.cross_validate(cv_splits=cv_splits)
