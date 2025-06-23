@@ -412,56 +412,107 @@ class MultiOutputEmissionsPipeline:
             pipe.fit(self.X_train, y_fit)
 
     def evaluate_models(self):
-        """Print MAE, RMSE, R², SMAPE *per target*."""
+        """Print Train & Test MAE, RMSE, R², SMAPE per target."""
         for name, pipe in self.pipelines.items():
-            y_pred = pipe.predict(self.X_test)
+            # 1) Test predictions
+            y_test_pred = pipe.predict(self.X_test)
+            # 2) Train predictions
+            y_train_pred = pipe.predict(self.X_train)
+
+            # undo log if needed
             if name == "XGB" and self._log_transform:
-                y_pred = np.expm1(y_pred)
+                y_test_pred  = np.expm1(y_test_pred)
+                y_train_pred = np.expm1(y_train_pred)
 
             print(f"\n=== {name} ===")
             for i, tgt in enumerate(self.targets):
-                y_true_i = self.y_test.iloc[:, i]
-                y_pred_i = y_pred[:, i]
+                # slice out the i-th column
+                y_true_test  = self.y_test.values[:, i]
+                y_true_train = self.y_train.values[:, i]
+                y_pred_test  = y_test_pred[:, i]
+                y_pred_train = y_train_pred[:, i]
 
-                mae = mean_absolute_error(y_true_i, y_pred_i)
-                rmse = np.sqrt(mean_squared_error(y_true_i, y_pred_i))
-                r2 = r2_score(y_true_i, y_pred_i)
-                denom = (np.abs(y_true_i) + np.abs(y_pred_i)) / 2
-                smape = np.mean(
-                    np.where(denom == 0, 0, np.abs(y_true_i - y_pred_i) / denom)
-                ) * 100
+                # helper to compute metrics
+                def compute_metrics(y_true, y_pred):
+                    mae  = mean_absolute_error(y_true, y_pred)
+                    rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+                    r2   = r2_score(y_true, y_pred)
+                    denom = (np.abs(y_true) + np.abs(y_pred)) / 2
+                    smape = np.mean(
+                        np.where(denom == 0, 0, np.abs(y_true - y_pred) / denom)
+                    ) * 100
+                    return mae, rmse, r2, smape
 
-                print(
-                    f"{tgt:30s} → MAE: {mae:.4f}, "
-                    f"RMSE: {rmse:.4f}, R²: {r2:.4f}, SMAPE: {smape:.1f}%"
+                tr_mae, tr_rmse, tr_r2, tr_smape = compute_metrics(
+                    y_true_train, y_pred_train
+                )
+                te_mae, te_rmse, te_r2, te_smape = compute_metrics(
+                    y_true_test, y_pred_test
                 )
 
-    def cross_validate(self, cv_splits: int = 5):
-        """CV on the train set; multi-output metrics averaged by default."""
+                print(
+                    f"{tgt:30s}\n"
+                    f"  Train → MAE: {tr_mae:.4f}, RMSE: {tr_rmse:.4f}, "
+                    f"R²: {tr_r2:.4f}, SMAPE: {tr_smape:.1f}%\n"
+                    f"   Test → MAE: {te_mae:.4f}, RMSE: {te_rmse:.4f}, "
+                    f"R²: {te_r2:.4f}, SMAPE: {te_smape:.1f}%"
+                )
+
+    def cross_validate_per_target(self, cv_splits: int = 5):
+        """
+        For each model and for each target variable, run CV on X_train → y_train[target]
+        and print train/test MAE, RMSE, and R².
+        """
         scoring = {
             "MAE": "neg_mean_absolute_error",
-            "R2": "r2",
             "RMSE": "neg_root_mean_squared_error",
+            "R2": "r2",
         }
-        kf = KFold(
-            n_splits=cv_splits, shuffle=True, random_state=self.random_state
-        )
+        kf = KFold(n_splits=cv_splits, shuffle=True, random_state=self.random_state)
 
         for name, pipe in self.pipelines.items():
-            y_cv = np.log1p(self.y_train) if (name == "XGB" and self._log_transform) else self.y_train
-            results = cross_validate(
-                pipe,
-                self.X_train,
-                y_cv,
-                cv=kf,
-                scoring=scoring,
-                n_jobs=-1,
-            )
             print(f"\n=== CV Results for {name} ===")
-            for metric, scores in results.items():
-                if metric.startswith("test_"):
-                    val = -scores.mean() if "neg" in scoring[metric[5:]] else scores.mean()
-                    print(f"{metric}: {val:.4f} ± {scores.std():.4f}")
+            model = pipe.named_steps["model"]
+
+            for tgt in self.targets:
+                # y must be 2D for MultiOutputRegressor, 1D otherwise
+                if isinstance(model, MultiOutputRegressor):
+                    y = self.y_train[[tgt]]        # shape (n_samples, 1)
+                else:
+                    y = self.y_train[tgt]          # shape (n_samples,)
+
+                # apply log1p ONLY if this is the XGB pipeline & flag set
+                if name == "XGB" and self._log_transform:
+                    y = np.log1p(y)
+
+                results = cross_validate(
+                    pipe,
+                    self.X_train,
+                    y,
+                    cv=kf,
+                    scoring=scoring,
+                    return_train_score=True,
+                    n_jobs=-1,
+                )
+
+                print(f"\n-- Target: {tgt} --")
+                for metric in ["MAE", "RMSE", "R2"]:
+                    train_scores = results[f"train_{metric}"]
+                    test_scores  = results[f"test_{metric}"]
+
+                    # flip sign back for the neg_ metrics
+                    if metric in ["MAE", "RMSE"]:
+                        train_mean = -train_scores.mean()
+                        test_mean  = -test_scores.mean()
+                    else:
+                        train_mean = train_scores.mean()
+                        test_mean  = test_scores.mean()
+
+                    print(
+                        f"{metric:5s} | "
+                        f"Train: {train_mean:.4f} ± {train_scores.std():.4f}  | "
+                        f"Test:  {test_mean:.4f} ± {test_scores.std():.4f}"
+                    )
 
     def plot_feature_importances(self, top_n: int = 10):
             """
@@ -540,6 +591,19 @@ class MultiOutputEmissionsPipeline:
         
         plt.tight_layout()
         plt.show()
+
+    def predict(self, df_new: pd.DataFrame) -> pd.DataFrame:
+        """
+        Predict all target variables on df_new.
+        df_new must contain the same feature columns used for training.
+        Returns a DataFrame of shape (n_samples, n_targets).
+        """
+        X_new = df_new[self.X_train.columns]
+        y_pred = self.pipelines["XGB"].predict(X_new)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+        return pd.DataFrame(y_pred, columns=self.targets, index=X_new.index)
+
     
     def run(
         self,
@@ -554,7 +618,7 @@ class MultiOutputEmissionsPipeline:
             self.tune_hyperparameters()
         self.train_models(log_transform=log_transform)
         self.evaluate_models()
-        self.cross_validate(cv_splits=cv_splits)
+        self.cross_validate_per_target(cv_splits=cv_splits)
         if plot_figures:
             self.plot_feature_importances()
             self.plot_residuals()
