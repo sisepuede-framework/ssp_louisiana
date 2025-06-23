@@ -463,25 +463,90 @@ class MultiOutputEmissionsPipeline:
                     val = -scores.mean() if "neg" in scoring[metric[5:]] else scores.mean()
                     print(f"{metric}: {val:.4f} ± {scores.std():.4f}")
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    def plot_feature_importances(self, top_n: int = 10):
+            """
+            For each target, plot the top_n feature importances from the XGB estimators.
+            """
+            # grab the multi-output regressor
+            mor = self.pipelines["XGB"].named_steps["model"]
+            feature_names = self.X_train.columns
+            
+            n_targets = len(self.targets)
+            fig, axes = plt.subplots(n_targets, 1, figsize=(8, 4 * n_targets))
+            
+            if n_targets == 1:
+                axes = [axes]
+            
+            for i, tgt in enumerate(self.targets):
+                # each estimator_[i] is an XGBRegressor
+                imp = mor.estimators_[i].feature_importances_
+                idx = np.argsort(imp)[-top_n:][::-1]
+                
+                axes[i].barh(feature_names[idx][::-1], imp[idx][::-1])
+                axes[i].set_title(f"Top {top_n} Importances for '{tgt}'")
+                axes[i].set_xlabel("Importance")
+            
+            plt.tight_layout()
+            plt.show()
+
+    def plot_residuals(self):
+        """
+        For each target, scatter residual = true - pred vs predicted.
+        """
+        mor = self.pipelines["XGB"].named_steps["model"]
+        y_pred = mor.predict(self.X_test)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+        residuals = self.y_test.values - y_pred
+        
+        n = len(self.targets)
+        fig, axes = plt.subplots(n, 1, figsize=(6, 4 * n))
+        if n == 1:
+            axes = [axes]
+        
+        for i, tgt in enumerate(self.targets):
+            axes[i].scatter(y_pred[:, i], residuals[:, i], alpha=0.6)
+            axes[i].axhline(0, color="k", linestyle="--")
+            axes[i].set_xlabel("Predicted")
+            axes[i].set_ylabel("Residual")
+            axes[i].set_title(f"Residuals vs Predicted for '{tgt}'")
+        
+        plt.tight_layout()
+        plt.show()
+
+    def plot_actual_vs_predicted(self):
+        """
+        For each target, scatter actual vs predicted with a 45° reference line.
+        """
+        mor = self.pipelines["XGB"].named_steps["model"]
+        y_pred = mor.predict(self.X_test)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+        
+        n = len(self.targets)
+        fig, axes = plt.subplots(n, 1, figsize=(6, 4 * n))
+        if n == 1:
+            axes = [axes]
+        
+        for i, tgt in enumerate(self.targets):
+            y_true = self.y_test.values[:, i]
+            mn, mx = min(y_true.min(), y_pred[:, i].min()), max(y_true.max(), y_pred[:, i].max())
+            
+            axes[i].scatter(y_true, y_pred[:, i], alpha=0.6)
+            axes[i].plot([mn, mx], [mn, mx], "k--", linewidth=1)
+            axes[i].set_xlabel("Actual")
+            axes[i].set_ylabel("Predicted")
+            axes[i].set_title(f"Actual vs Predicted for '{tgt}'")
+        
+        plt.tight_layout()
+        plt.show()
     
     def run(
         self,
         tune: bool = True,
         log_transform: bool = False,
         cv_splits: int = 5,
+        plot_figures: bool = True,
     ):
         self._log_transform = log_transform
         self.preprocess()
@@ -490,3 +555,7 @@ class MultiOutputEmissionsPipeline:
         self.train_models(log_transform=log_transform)
         self.evaluate_models()
         self.cross_validate(cv_splits=cv_splits)
+        if plot_figures:
+            self.plot_feature_importances()
+            self.plot_residuals()
+            self.plot_actual_vs_predicted()
