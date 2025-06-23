@@ -34,7 +34,10 @@ class EmissionsPredictionPipeline:
         self.y_train = self.y_test = None
 
         self.best_params: dict = {}
+        # flag indicating whether to log-transform only XGB
         self._log_transform = False
+
+        # holds Pipelines for XGB + baselines
         self.pipelines: dict[str, Pipeline] = {}
 
     def preprocess(self):
@@ -50,6 +53,7 @@ class EmissionsPredictionPipeline:
         )
 
     def tune_hyperparameters(self, n_iter: int = 30, cv_splits: int = 5):
+        """Randomized search over XGB parameters, using log1p only if flag set."""
         param_dist = {
             "n_estimators": [100, 200, 500, 1000],
             "learning_rate": [0.005, 0.01, 0.05, 0.1],
@@ -84,7 +88,13 @@ class EmissionsPredictionPipeline:
             n_jobs=-1,
             verbose=1,
         )
-        search.fit(self.X_train, np.log1p(self.y_train))
+        # choose y for tuning
+        y_tune = (
+            np.log1p(self.y_train)
+            if self._log_transform
+            else self.y_train
+        )
+        search.fit(self.X_train, y_tune)
         self.best_params = {
             k.replace("model__", ""): v
             for k, v in search.best_params_.items()
@@ -92,11 +102,14 @@ class EmissionsPredictionPipeline:
         print("Best XGB hyperparameters:", self.best_params)
 
     def train_models(self, log_transform: bool = False):
+        """Fit XGB (with optional log1p) plus baseline models."""
         if self.X_train is None:
             raise RuntimeError("Call preprocess() first.")
+
+        # store flag
         self._log_transform = log_transform
 
-        # XGBoost
+        # 1) XGBoost
         xgb_model = xgb.XGBRegressor(
             **self.best_params,
             random_state=self.random_state,
@@ -104,7 +117,7 @@ class EmissionsPredictionPipeline:
         )
         self.pipelines["XGB"] = Pipeline([("model", xgb_model)])
 
-        # Baselines
+        # 2) Baselines
         self.pipelines["MeanBaseline"] = Pipeline(
             [("model", DummyRegressor(strategy="mean"))]
         )
@@ -121,21 +134,21 @@ class EmissionsPredictionPipeline:
                 )
             ]
         )
-        # **Elastic Net baseline**
         self.pipelines["ElasticNet"] = Pipeline(
             [("model", ElasticNet(random_state=self.random_state))]
         )
 
-        # Fit all pipelines
+        # Fit each
         for name, pipe in self.pipelines.items():
-            y_train = (
+            y_fit = (
                 np.log1p(self.y_train)
-                if (name == "XGB" and log_transform)
+                if (name == "XGB" and self._log_transform)
                 else self.y_train
             )
-            pipe.fit(self.X_train, y_train)
+            pipe.fit(self.X_train, y_fit)
 
     def evaluate_models(self):
+        """Print MAE, RMSE, R², SMAPE for all models."""
         for name, pipe in self.pipelines.items():
             y_pred = pipe.predict(self.X_test)
             if name == "XGB" and self._log_transform:
@@ -148,7 +161,9 @@ class EmissionsPredictionPipeline:
             smape = (
                 np.mean(
                     np.where(
-                        denom == 0, 0, np.abs(self.y_test - y_pred) / denom
+                        denom == 0,
+                        0,
+                        np.abs(self.y_test - y_pred) / denom,
                     )
                 )
                 * 100
@@ -161,8 +176,10 @@ class EmissionsPredictionPipeline:
     def cross_validate(
         self, cv_splits: int = 5, model_names: list[str] | None = None
     ):
+        """Cross-validate on train set, log1p only for XGB if flag set."""
         if model_names is None:
             model_names = list(self.pipelines.keys())
+
         scoring = {
             "MAE": "neg_mean_absolute_error",
             "R2": "r2",
@@ -173,23 +190,34 @@ class EmissionsPredictionPipeline:
             shuffle=True,
             random_state=self.random_state,
         )
+
         for name in model_names:
             pipe = self.pipelines[name]
-            y_train = (
+            y_cv = (
                 np.log1p(self.y_train)
                 if (name == "XGB" and self._log_transform)
                 else self.y_train
             )
             results = cross_validate(
-                pipe, self.X_train, y_train, cv=kf, scoring=scoring, n_jobs=-1
+                pipe,
+                self.X_train,
+                y_cv,
+                cv=kf,
+                scoring=scoring,
+                n_jobs=-1,
             )
             print(f"\n=== CV Results for {name} ===")
             for metric, scores in results.items():
                 if metric.startswith("test_"):
-                    val = -scores.mean() if "neg" in scoring[metric[5:]] else scores.mean()
+                    val = (
+                        -scores.mean()
+                        if "neg" in scoring[metric[5:]]
+                        else scores.mean()
+                    )
                     print(f"{metric}: {val:.4f} ± {scores.std():.4f}")
 
     def create_plots(self):
+        """Residuals, Pred vs Actual, importances & SHAP for XGB only."""
         if "XGB" not in self.pipelines:
             raise RuntimeError("Train XGB first.")
         y_pred = self.pipelines["XGB"].predict(self.X_test)
@@ -209,8 +237,11 @@ class EmissionsPredictionPipeline:
         axes[0].set_xlabel("Predicted")
         axes[0].set_ylabel("Residuals")
         axes[0].set_title("Residuals vs. Predicted")
+
         axes[1].scatter(y_pred, self.y_test, alpha=0.6)
-        mn, mx = min(y_pred.min(), self.y_test.min()), max(y_pred.max(), self.y_test.max())
+        mn, mx = min(y_pred.min(), self.y_test.min()), max(
+            y_pred.max(), self.y_test.max()
+        )
         axes[1].plot([mn, mx], [mn, mx], "k--")
         axes[1].set_xlabel("Predicted")
         axes[1].set_ylabel("Actual")
@@ -229,6 +260,7 @@ class EmissionsPredictionPipeline:
         explainer = shap.Explainer(model, self.X_test)
         shap_vals = explainer(self.X_test)
         top4 = features[np.argsort(importances)[-4:]].tolist()
+
         plt.figure(figsize=(10, 7))
         shap.summary_plot(shap_vals[:, top4], self.X_test[top4], show=False)
         plt.tight_layout()
@@ -241,6 +273,10 @@ class EmissionsPredictionPipeline:
         cv_splits: int = 5,
         create_plots: bool = True,
     ):
+        # set the log-transform flag first
+        self._log_transform = log_transform
+
+        # pipeline steps
         self.preprocess()
         if tune:
             self.tune_hyperparameters()
