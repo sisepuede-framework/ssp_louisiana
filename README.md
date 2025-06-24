@@ -19,7 +19,7 @@
 
 Metamodel = Surrogate ML model + Optimization routine
 
-## Getting Started
+### Getting Started
 
 To get started, follow these steps:
 
@@ -38,15 +38,12 @@ To get started, follow these steps:
 
 3. **Ensure you have the SISEPUEDE output data**:
 
-   * Under `metamodel/data/`, create a folder named `ssp`.
-   * Inside the `ssp` folder, place a SISEPUEDE output database folder. You can obtain it from this [OneDrive link](https://tecmx-my.sharepoint.com/:f:/g/personal/juan_robledo_tec_mx/EiFqmgg61l9GlkMyKiF57bEB4736Kw5_VRhYlt34z2bZoA?e=FiTL6X).
-   * *Note*: This is temporary. We should improve the codebase to allow direct access to these files from AWS S3.
+   * The SISEPUEDE output data is stored in an S3 bucket. Therefore, it is important to set up your AWS SSO login credentials to access the bucket through the AWS CLI. Please follow this [tutorial](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-sso.html#sso-configure-profile-token-auto-sso) if you haven't set your credentials.
+   * You can also refer to the tutorial in [metamodel/notebooks/aws\_test.ipynb](metamodel/notebooks/aws_test.ipynb) to learn how to properly retrieve the data.
 
-You're now ready to use the Metamodel!
+### Important Files
 
-## Important Files
-
-* [metamodel/notebooks/etl.ipynb](metamodel/notebooks/etl.ipynb): Notebook where the `lhs_samples` data and the SISEPUEDE emission output data are merged. The training dataframe is created here.
-* [metamodel/notebooks/model\_draft\_gb\_2.ipynb](metamodel/notebooks/model_draft_gb_2.ipynb): Notebook containing the machine learning pipeline for training a gradient boosting model to predict emissions per subsector.
+* [metamodel/notebooks/etl_3.ipynb](metamodel/notebooks/etl.ipynb): Notebook where the `lhs_samples` data and the SISEPUEDE emission output data are merged. The training dataframe is created here.
+* [metamodel/notebooks/model\_draft\_gb\_4.ipynb](metamodel/notebooks/model_draft_gb_2.ipynb): Notebook containing the machine learning pipeline for training a gradient boosting model to predict multiple targets.
 * [metamodel/notebooks/utils/eda\_utils.py](metamodel/notebooks/utils/eda_utils.py): Utility module for exploratory data analysis and data cleaning.
-* [metamodel/notebooks/utils/ml\_utils.py](notebooks/utils/ml_utils.py): Utility module for machine learning pipelines.
+* [metamodel/notebooks/utils/ml\_utils\_v2.py](notebooks/utils/ml_utils.py): Utility module for machine learning pipelines.
