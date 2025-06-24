@@ -543,63 +543,68 @@ class MultiOutputEmissionsPipeline:
     def plot_residuals(self):
         """
         For each target, scatter residual = true - pred vs predicted.
+        Plots are arranged side by side.
         """
         mor = self.pipelines["XGB"].named_steps["model"]
         y_pred = mor.predict(self.X_test)
         if self._log_transform:
             y_pred = np.expm1(y_pred)
         residuals = self.y_test.values - y_pred
-        
+
         n = len(self.targets)
-        fig, axes = plt.subplots(n, 1, figsize=(6, 4 * n))
+        fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
         if n == 1:
             axes = [axes]
-        
+
         for i, tgt in enumerate(self.targets):
             axes[i].scatter(y_pred[:, i], residuals[:, i], alpha=0.6)
             axes[i].axhline(0, color="k", linestyle="--")
             axes[i].set_xlabel("Predicted")
             axes[i].set_ylabel("Residual")
             axes[i].set_title(f"Residuals vs Predicted for '{tgt}'")
-        
+
         plt.tight_layout()
         plt.show()
 
     def plot_actual_vs_predicted(self):
         """
         For each target, scatter actual vs predicted with a 45° reference line.
+        Plots are arranged side by side.
         """
         mor = self.pipelines["XGB"].named_steps["model"]
         y_pred = mor.predict(self.X_test)
         if self._log_transform:
             y_pred = np.expm1(y_pred)
-        
+
         n = len(self.targets)
-        fig, axes = plt.subplots(n, 1, figsize=(6, 4 * n))
+        fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
         if n == 1:
             axes = [axes]
-        
+
         for i, tgt in enumerate(self.targets):
             y_true = self.y_test.values[:, i]
             mn, mx = min(y_true.min(), y_pred[:, i].min()), max(y_true.max(), y_pred[:, i].max())
-            
+
             axes[i].scatter(y_true, y_pred[:, i], alpha=0.6)
             axes[i].plot([mn, mx], [mn, mx], "k--", linewidth=1)
             axes[i].set_xlabel("Actual")
             axes[i].set_ylabel("Predicted")
             axes[i].set_title(f"Actual vs Predicted for '{tgt}'")
-        
+
         plt.tight_layout()
         plt.show()
 
-    def predict(self, df_new: pd.DataFrame) -> pd.DataFrame:
+    def predict(self, df_new: pd.DataFrame, ml_pipeline=None) -> pd.DataFrame:
         """
         Predict all target variables on df_new.
         df_new must contain the same feature columns used for training.
         Returns a DataFrame of shape (n_samples, n_targets).
         """
         X_new = df_new[self.X_train.columns]
-        y_pred = self.pipelines["XGB"].predict(X_new)
+        pipeline = ml_pipeline if ml_pipeline is not None else self.pipelines.get("XGB")
+        if pipeline is None:
+            raise ValueError("No pipeline provided and 'XGB' pipeline not trained.")
+        y_pred = pipeline.predict(X_new)
         if self._log_transform:
             y_pred = np.expm1(y_pred)
         return pd.DataFrame(y_pred, columns=self.targets, index=X_new.index)
