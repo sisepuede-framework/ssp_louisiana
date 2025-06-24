@@ -216,6 +216,33 @@ class GBEmissionsPredictionPipeline:
         self.pipeline.fit(self.X_train, y)
         self._log_transform = log_transform
 
+    
+    def evaluate_baseline(self):
+        """
+        Evaluate baseline model that predicts the mean of y_train.
+        
+        Parameters:
+            y_true (array-like): Ground truth target values (e.g., test set or full set).
+            y_train_mean (float, optional): If provided, use this as the prediction. Otherwise, use y_true.mean().
+        
+        Returns:
+            dict: Dictionary with MAE, RMSE, and R².
+        """
+
+        y_train_mean = np.mean(self.y_train)
+        
+        y_pred_baseline = np.full_like(self.y_test, fill_value=y_train_mean, dtype=np.float64)
+        
+        mae = mean_absolute_error(self.y_test, y_pred_baseline)
+        rmse = np.sqrt(mean_squared_error(self.y_test, y_pred_baseline))
+        r2 = r2_score(self.y_test, y_pred_baseline)
+        
+        print(f"Baseline MAE: {mae:.4f}")
+        print(f"Baseline RMSE: {rmse:.4f}")
+        print(f"Baseline R²: {r2:.4f}")
+        print(f"Predicted Mean: {y_train_mean:.4f}")
+        print("-"*50)
+    
     def evaluate_model(self):
         if self.pipeline is None:
             raise ValueError("Train the model before evaluation.")
@@ -227,10 +254,15 @@ class GBEmissionsPredictionPipeline:
         mae = mean_absolute_error(self.y_test, y_pred)
         rmse = np.sqrt(mean_squared_error(self.y_test, y_pred))
         r2  = r2_score(self.y_test, y_pred)
+        # SMAPE calculation
+        denominator = (np.abs(self.y_test) + np.abs(y_pred)) / 2
+        smape = np.mean(np.where(denominator == 0, 0, np.abs(self.y_test - y_pred) / denominator)) * 100
 
-        print(f"MAE:  {mae:.4f}")
-        print(f"RMSE: {rmse:.4f}")
-        print(f"R²:   {r2:.4f}")
+        print(f"MAE:   {mae:.4f}")
+        print(f"RMSE:  {rmse:.4f}")
+        print(f"R²:    {r2:.4f}")
+        print(f"SMAPE: {smape:.2f}%")
+        print("-"*50)
 
     def create_plots(self):
         if self.pipeline is None:
@@ -320,6 +352,7 @@ class GBEmissionsPredictionPipeline:
         if tune:
             self.tune_hyperparameters()
         self.train_model(log_transform=log_transform)
+        self.evaluate_baseline()
         self.evaluate_model()
         self.cross_validate_model()
         if create_plots:

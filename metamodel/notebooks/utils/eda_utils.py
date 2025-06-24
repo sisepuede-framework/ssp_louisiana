@@ -5,8 +5,14 @@ import numpy as np
 from sklearn.mixture import GaussianMixture
 from sklearn.feature_selection import VarianceThreshold
 from scipy.stats import zscore
+import yaml
 
 class EDAUtils:
+
+    @staticmethod
+    def read_yaml(file_path):
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
 
     @staticmethod
     def plot_emissions_histogram(df, column="total_emissions_last_five_years", bins=30, kde=True, title="Distribution of Total Emissions in the Last Five Years"):
@@ -169,6 +175,13 @@ class EDAUtils:
                     to_drop.add(colname)
         print(f"Columns to drop due to multicollinearity (threshold={threshold}): {to_drop}")
         return list(to_drop)
+    
+    @staticmethod
+    def plot_correlation_matrix(df, figsize=(12, 10), cmap='coolwarm'):
+        plt.figure(figsize=figsize)
+        sns.heatmap(df.corr(), annot=True, fmt=".2f", cmap=cmap, square=True, cbar_kws={"shrink": .8})
+        plt.title("Correlation Matrix")
+        plt.show()
 
 
 class DataCleaningUtils:
