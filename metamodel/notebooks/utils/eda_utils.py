@@ -5,8 +5,14 @@ import numpy as np
 from sklearn.mixture import GaussianMixture
 from sklearn.feature_selection import VarianceThreshold
 from scipy.stats import zscore
+import yaml
 
 class EDAUtils:
+
+    @staticmethod
+    def read_yaml(file_path):
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
 
     @staticmethod
     def plot_emissions_histogram(df, column="total_emissions_last_five_years", bins=30, kde=True, title="Distribution of Total Emissions in the Last Five Years"):
