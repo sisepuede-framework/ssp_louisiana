@@ -6,3 +6,4 @@ scikit-learn
 shap
 xgboost
 boto3
+joblib
