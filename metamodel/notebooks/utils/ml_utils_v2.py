@@ -562,6 +562,7 @@ class MultiOutputEmissionsPipeline:
             axes[i].set_xlabel("Predicted")
             axes[i].set_ylabel("Residual")
             axes[i].set_title(f"Residuals vs Predicted for '{tgt}'")
+            # axes[i].set_ylim(-40, 40)
 
         plt.tight_layout()
         plt.show()
