@@ -43,7 +43,8 @@ To get started, follow these steps:
 
 ### Important Files
 
-* [metamodel/notebooks/etl_3.ipynb](metamodel/notebooks/etl.ipynb): Notebook where the `lhs_samples` data and the SISEPUEDE emission output data are merged. The training dataframe is created here.
-* [metamodel/notebooks/model\_draft\_gb\_4.ipynb](metamodel/notebooks/model_draft_gb_2.ipynb): Notebook containing the machine learning pipeline for training a gradient boosting model to predict multiple targets.
+* [metamodel/notebooks/etl_4.1.ipynb](metamodel/notebooks/etl_4.1.ipynb): Notebook where the `lhs_samples` data, the SISEPUEDE emission output data and the Cost-Benefit data are merged. The training dataframe is created here.
+* [metamodel/notebooks/model\_draft\_gb\_5.1.ipynb](metamodel/notebooks/model_draft_gb_5.1.ipynb): Notebook containing the machine learning pipeline for training a gradient boosting model to predict multiple targets.
 * [metamodel/notebooks/utils/eda\_utils.py](metamodel/notebooks/utils/eda_utils.py): Utility module for exploratory data analysis and data cleaning.
-* [metamodel/notebooks/utils/ml\_utils\_v2.py](notebooks/utils/ml_utils.py): Utility module for machine learning pipelines.
+* [metamodel/notebooks/utils/ml\_utils\_v2.py](notebooks/utils/ml_utils_v2.py): Utility module for machine learning pipelines.
+* [metamodel/notebooks/trained_models/xgb_pipeline_5.1.pkl](metamodel/notebooks/trained_models/xgb_pipeline_5.1.pkl): Trained ML model that can be loaded in python and used to predict multitargets with new observations.
