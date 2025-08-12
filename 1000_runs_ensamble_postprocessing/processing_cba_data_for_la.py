@@ -8,7 +8,8 @@ data_id = "de38bb46-7d00-4cf5-8844-f6cc20695024"
 
 
 
-in_file = os.path.join(OUTPUT_DIR_PATH, f"combined_cb_results_{data_id}.csv")
+# in_file = os.path.join(OUTPUT_DIR_PATH, f"combined_cb_results_{data_id}.csv")
+in_file = os.path.join(OUTPUT_DIR_PATH, f"combined_cb_results_updated.csv")
 out_file = os.path.join(OUTPUT_DIR_PATH, f"wide_cb_data_lhc{data_id}.csv")
 
 # --- load ---
