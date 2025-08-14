@@ -194,7 +194,7 @@ class TemporalDecomposition:
         if t0.empty:
             raise ValueError(f"No rows at time_period == {time_period_ref} found.")
 
-        ref_id = int(t0[id_col].min())
+        ref_id = int(t0[id_col].min()) # picks the smallest primary_id at t0
         ref_row = t0[t0[id_col] == ref_id].head(1)
 
         # build reference values (fallback to 0.0 if missing)
