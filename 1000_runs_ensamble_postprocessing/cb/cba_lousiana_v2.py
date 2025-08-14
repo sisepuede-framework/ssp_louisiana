@@ -1,4 +1,6 @@
-## Cargamos paqueterías
+# NOTE: This script is used for a standard CB analysis with a fixed future_id and different strategy_ids.
+
+## Load packages
 from costs_benefits_ssp.cb_calculate import CostBenefits
 import numpy as np
 import pandas as pd 
@@ -32,13 +34,13 @@ ssp_data = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, f"sisepuede_results_I
 att_primary = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, "ATTRIBUTE_PRIMARY.csv"))
 att_strategy = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, "ATTRIBUTE_STRATEGY.csv"))
 
-## Define estrategia base
+## Define base strategy
 strategy_code_base = "BASE"
 
-## Instanciamos un objeto de la clase CostBenefits 
+## Instantiate an object of the CostBenefits class
 cb = CostBenefits(ssp_data, att_primary, att_strategy, strategy_code_base)
 
-# Once that the excel file has been updated, we can reload it in order to update the cost factors database
+# Once the excel file has been updated, we can reload it to update the cost factors database
 cb.load_cb_parameters(os.path.join(CB_DEFAULT_DEFINITION_PATH, "cb_config_params.xlsx"))
 
 # Compute System Costs
@@ -58,4 +60,3 @@ results_all_pp = cb.cb_process_interactions(results_all)
 results_all_pp_shifted = cb.cb_shift_costs(results_all_pp)
 
 results_all_pp_shifted.to_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, f"cba_la.csv"), index = False)
-

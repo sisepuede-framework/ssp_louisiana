@@ -1,4 +1,6 @@
-## Cargamos paqueterías
+#NOTE: Use this script when having an experiment with different future_ids and the same strategy_id.
+
+## Load packages
 from costs_benefits_ssp.cb_calculate import CostBenefits
 import numpy as np
 import pandas as pd 
@@ -68,15 +70,15 @@ primary_id_base = 354354
 ssp_data["primary_id"] = ssp_data["primary_id"].replace({ 354354 : 0})
 ssp_data = ssp_data.replace(np.nan, 0.0)
 
-## Define estrategia base
+## Define base strategy
 strategy_code_base = "BASE"
 
-## Instanciamos un objeto de la clase CostBenefits 
+## Instantiate an object of the CostBenefits class
 cb = CostBenefits(ssp_data, att_primary, att_strategy, strategy_code_base)
 
 cb.ssp_data["future_id"] = 0
 
-# Once that the excel file has been updated, we can reload it in order to update the cost factors database
+# Once the excel file has been updated, we can reload it in order to update the cost factors database
 cb.load_cb_parameters(os.path.join(CB_DEFAULT_DEFINITION_PATH, "cb_config_params.xlsx"))
 
 # Compute System Costs
