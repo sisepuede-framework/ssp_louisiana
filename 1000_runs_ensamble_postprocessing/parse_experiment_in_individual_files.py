@@ -10,7 +10,8 @@ ENSEMBLE_DIR_PATH = os.path.join(DATA_DIR_PATH, "ensemble_raw_data")
 os.makedirs(DATA_DIR_PATH, exist_ok=True)
 os.makedirs(ENSEMBLE_DIR_PATH, exist_ok=True)
 
-file_name = "de38bb46-7d00-4cf5-8844-f6cc20695024.csv"
+run_id = "2025-08-13T02;26;01.977344"
+file_name = f"sisepuede_run_{run_id}_WIDE_INPUTS_OUTPUTS.csv"
 full_path = os.path.join(ENSEMBLE_DIR_PATH, file_name)
 
 # Read the big CSV
@@ -23,9 +24,8 @@ all_ids = full_sim["primary_id"].unique()
 OUTPUT_DIR_PATH = os.path.join(DATA_DIR_PATH, "parsed_runs")
 os.makedirs(OUTPUT_DIR_PATH, exist_ok=True)
 
-# Create a directory with the same name as the file
-file_base_name = os.path.splitext(file_name)[0]
-OUTPUT_DIR_PATH = os.path.join(OUTPUT_DIR_PATH, file_base_name)
+# Create a directory with the same name as the run_id
+OUTPUT_DIR_PATH = os.path.join(OUTPUT_DIR_PATH, run_id)
 os.makedirs(OUTPUT_DIR_PATH, exist_ok=True)
 
 # Split and save
