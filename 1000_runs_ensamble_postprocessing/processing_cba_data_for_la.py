@@ -3,14 +3,16 @@ import pandas as pd
 
 # --- paths ---
 SCRIPT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_DIR_PATH  = os.path.join(SCRIPT_DIR_PATH, "output")
-data_id = "de38bb46-7d00-4cf5-8844-f6cc20695024"
+DATA_DIR_PATH = os.path.join(SCRIPT_DIR_PATH, "data")
+ENSEMBLE_DIR_PATH = os.path.join(DATA_DIR_PATH, "ensemble_data")
+RUN_DIR_PATH = os.path.join(ENSEMBLE_DIR_PATH, "sisepuede_summary_results_run_sisepuede_run_2025-08-10t10;29;30.545790")
+data_id = "2025-08-10t10;29;30.545790"
 
 
 
 # in_file = os.path.join(OUTPUT_DIR_PATH, f"combined_cb_results_{data_id}.csv")
-in_file = os.path.join(OUTPUT_DIR_PATH, f"combined_cb_results_updated.csv")
-out_file = os.path.join(OUTPUT_DIR_PATH, f"wide_cb_data_lhc{data_id}.csv")
+in_file = os.path.join(RUN_DIR_PATH, f"combined_cb_results_updated.csv")
+out_file = os.path.join(RUN_DIR_PATH, f"wide_cb_data_lhc_{data_id}.csv")
 
 # --- load ---
 cb_data = pd.read_csv(in_file)
