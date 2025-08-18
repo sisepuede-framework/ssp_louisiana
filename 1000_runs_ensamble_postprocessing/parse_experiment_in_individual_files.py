@@ -1,18 +1,21 @@
+# This script parses a large CSV file containing simulation data and splits it into individual files based on unique primary IDs.
+# Each individual file is saved in a directory named after the run ID.
+# It ensures that the necessary directories exist and handles the creation of output files.
+# after this, you can run the decomposition notebook
+
 import pandas as pd
 import os
 
 # Set root directory and file name
 SCRIPT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR_PATH = os.path.join(SCRIPT_DIR_PATH, "data")
-ENSEMBLE_DIR_PATH = os.path.join(DATA_DIR_PATH, "ensemble_raw_data")
+ENSEMBLE_DIR_PATH = os.path.join(DATA_DIR_PATH, "ensemble_data")
 
-# Ensure the data directory exists
-os.makedirs(DATA_DIR_PATH, exist_ok=True)
-os.makedirs(ENSEMBLE_DIR_PATH, exist_ok=True)
 
-run_id = "2025-08-13T02;26;01.977344"
-file_name = f"sisepuede_run_{run_id}_WIDE_INPUTS_OUTPUTS.csv"
-full_path = os.path.join(ENSEMBLE_DIR_PATH, file_name)
+run_id = "2025-08-17T22;36;58.136929"
+RUN_ENSEMBLE_DIR_PATH = os.path.join(ENSEMBLE_DIR_PATH, f"sisepuede_summary_results_run_sisepuede_run_{run_id}")
+file_name = "WIDE_INPUTS_OUTPUTS.csv"
+full_path = os.path.join(RUN_ENSEMBLE_DIR_PATH, file_name)
 
 # Read the big CSV
 full_sim = pd.read_csv(full_path)
