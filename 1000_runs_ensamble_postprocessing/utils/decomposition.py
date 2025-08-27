@@ -77,61 +77,73 @@ class TemporalDecomposition:
         te_all["sector_gas"] = te_all.index.astype(str) + "-" + te_all["Subsector"] + "-" + te_all["Gas"]
         sector_gas_all = te_all["sector_gas"].unique()
 
-        idx_t0 = pd.IndexSlice[:, time_period_ref]
+        idx_t0_ref = (ref_inds, time_period_ref)
 
         for sector_gas_i in sector_gas_all:
             row = te_all.loc[te_all["sector_gas"] == sector_gas_i]
             if row.empty:
                 continue
 
-            tv1 = row["Vars_list"].iloc[0]       # list of variable names for this sector-gas
+            tv1 = row["Vars_list"].iloc[0]       # list[str]
             target_total = row["tvalue"].iloc[0]
 
             # Uncalibrated total at t0 for the *reference* Index
             try:
-                uncalibrated_total = data.loc[(ref_inds, time_period_ref), tv1].sum(skipna=True)
+                uncalibrated_total = data.loc[idx_t0_ref, tv1].sum(skipna=True)
             except KeyError:
                 uncalibrated_total = np.nan
 
-            # Deviation factor
+            # Deviation factor (only for the reference row at t0)
             if pd.isna(uncalibrated_total) or uncalibrated_total == 0:
                 deviation_factor = 1.0
             else:
                 deviation_factor = float(target_total) / float(uncalibrated_total)
 
-            # Scale ALL rows at t0 for the current tv1 by deviation_factor (like the R code)
-            data.loc[idx_t0, tv1] = data.loc[idx_t0, tv1] * deviation_factor
+            # --- scale the reference t0 ONLY ---
+            if (ref_inds, time_period_ref) in data.index:
+                data.loc[idx_t0_ref, tv1] = data.loc[idx_t0_ref, tv1] * deviation_factor
 
-            # Build each ID's full time series starting from the *single* reference init_value
+            # --- reconstruct each ID from t0 onwards, forcing common t0 ---
             for ind in inds:
                 for tv in tv1:
-                    # Reference init value after deviation scaling
+                    # Everyone starts at the *reference* t0 (equal initial year)
                     try:
-                        init_value = data.loc[(ref_inds, time_period_ref), tv]
+                        init_value = data.loc[idx_t0_ref, tv]
                     except KeyError:
-                        # No reference value for this var; skip
                         continue
-
                     if pd.isna(init_value):
                         init_value = 0.0
+                    init_value = float(init_value)
 
-                    # Pull this ID's pct_diffs/diffs, aligned and ordered by time
+                    # Pull this ID's pct_diffs/diffs (already sorted by (Index,time_period))
                     try:
-                        pct_series = pct_diffs.loc[(ind,), f"pct_diff_{tv}"].sort_index()  # index: time_period
-                        diff_series = pct_diffs.loc[(ind,), f"diff_{tv}"].sort_index()     # index: time_period
+                        pct_series = pct_diffs.loc[(ind,), f"pct_diff_{tv}"].sort_index()
+                        diff_series = pct_diffs.loc[(ind,), f"diff_{tv}"].sort_index()
                     except KeyError:
-                        # No pct/diff for this ID (var not present?); skip
                         continue
 
-                    times = pct_series.index.to_numpy()
+                    # We only write t0 and AFTER (you already filtered df_in to >= t0)
+                    if time_period_ref not in pct_series.index:
+                        # if the ID doesn't have t0, skip it
+                        continue
 
-                    if float(init_value) == 0.0:
-                        vals = (diff_series.cumsum().to_numpy()) * deviation_factor
+                    # Split to exactly t0 and strictly after t0
+                    pct_after = pct_series.loc[pct_series.index > time_period_ref]
+                    times_out = [time_period_ref] + list(pct_after.index)
+
+                    if init_value == 0.0:
+                        # additive path -> cumulative diffs after t0; t0 is 0
+                        diffs_after = diff_series.loc[diff_series.index > time_period_ref]
+                        vals_after = np.cumsum(diffs_after.to_numpy())
+                        vals = np.concatenate([[0.0], vals_after])
                     else:
-                        vals = float(init_value) * np.cumprod(1.0 + pct_series.to_numpy())
+                        # multiplicative path -> v_t = v_{t-1} * (1 + pct_t)
+                        vals_after = init_value * np.cumprod(1.0 + pct_after.to_numpy())
+                        vals = np.concatenate([[init_value], vals_after])
 
-                    # Assign by exact (Index, time_period) keys — order-safe
-                    data.loc[(ind, times), tv] = vals
+                    # Write back (Index, time) pairs for this variable
+                    data.loc[(ind, times_out), tv] = vals
+
 
         # ---------- Sector totals ----------
         data_reset = data.reset_index()  # bring Index/time_period back as columns for grouping & sums
@@ -145,6 +157,35 @@ class TemporalDecomposition:
                 data_reset[f"emission_co2e_subsector_total_{s}"] = data_reset[sector_vars].sum(axis=1)
             else:
                 data_reset[f"emission_co2e_subsector_total_{s}"] = 0.0
+
+
+        # ---------- Final t0 equalization for *all* co2e_ vars (mapped + unmapped) ----------
+        # Gather variables we actually processed
+        processed_vars = set()
+        for _, row in te_all.iterrows():
+            for v in row["Vars_list"]:
+                processed_vars.add(v)
+
+        # All base vars in the data
+        all_co2e = [c for c in data.columns if "co2e_" in c and not c.startswith("emission_co2e_subsector_total_")]
+
+        # Unmapped vars (never touched above) -> force common t0 level too
+        unmapped = [v for v in all_co2e if v not in processed_vars]
+
+        if unmapped:
+            # reference values at t0 from the reference Index
+            idx_t0_ref = (ref_inds, time_period_ref)
+            try:
+                ref_vals = data.loc[idx_t0_ref, unmapped].astype(float)
+            except KeyError:
+                ref_vals = pd.Series(index=unmapped, dtype=float)
+
+            # broadcast to all IDs at t0 where we have a ref value
+            t0_mask = pd.IndexSlice[:, time_period_ref]
+            for v in unmapped:
+                if v in data.columns and v in ref_vals.index and pd.notna(ref_vals[v]):
+                    data.loc[t0_mask, v] = float(ref_vals[v])
+
 
         # ---------- Write output ----------
         out_path = os.path.join(dir_output, f"{tregion}_{run}.csv")
@@ -168,63 +209,27 @@ class TemporalDecomposition:
             else:
                 df[f"{prefix}{s}"] = 0.0
         return df
-
-    
-    
-    # --- post-pass: enforce a single global t0 across ALL primary_ids ---
-    @ staticmethod
-    def enforce_global_t0_equalization(
-        df: pd.DataFrame,
-        time_period_ref: int = 7,
-        region_col: str = "region",
-        id_col: str = "primary_id",
-        time_col: str = "time_period",
-        te_all: pd.DataFrame | None = None,
-        mapped_only: bool = False,
-    ):
-        # choose which variables to equalize
-        if mapped_only and te_all is not None and "Vars_list" in te_all.columns:
-            mapped = sorted({v for vs in te_all["Vars_list"] for v in vs})
-            tv = [c for c in df.columns if c in mapped]
-        else:
-            tv = [c for c in df.columns if "co2e_" in c and not c.startswith("emission_co2e_subsector_total_")]
-
-        # pick a deterministic global reference primary_id (must exist at t0)
-        t0 = df[df[time_col] == time_period_ref]
-        if t0.empty:
-            raise ValueError(f"No rows at time_period == {time_period_ref} found.")
-
-        ref_id = int(t0[id_col].min()) # picks the smallest primary_id at t0
-        ref_row = t0[t0[id_col] == ref_id].head(1)
-
-        # build reference values (fallback to 0.0 if missing)
-        ref_vals = {}
-        for v in tv:
-            if v in ref_row.columns and not ref_row.empty:
-                val = ref_row[v].iloc[0]
-                ref_vals[v] = 0.0 if pd.isna(val) else float(val)
-            else:
-                ref_vals[v] = 0.0
-
-        # broadcast to everyone at t0
-        t0_mask = df[time_col] == time_period_ref
-        for v, val in ref_vals.items():
-            df.loc[t0_mask, v] = val
-
-        return df
     
     @staticmethod
     def assert_equal_t0(
         df: pd.DataFrame,
         time_period_ref: int,
-        region_col="region",
-        id_col="primary_id",
-        time_col="time_period",
-        atol=1e-9,
-    ):
-        tv = [c for c in df.columns if "co2e_" in c and not c.startswith("emission_co2e_subsector_total_")]
+        region_col: str = "region",
+        id_col: str = "primary_id",
+        time_col: str = "time_period",
+        te_all: pd.DataFrame | None = None,
+        mapped_only: bool = True,          # <— default to mapped only
+        atol: float = 1e-7,                # <— a touch looser for fp noise
+        rtol: float = 0.0,
+    ) -> bool:
+        # choose vars
+        if mapped_only and te_all is not None and "Vars_list" in te_all.columns:
+            tv = sorted({v for vs in te_all["Vars_list"] for v in vs})
+            tv = [c for c in tv if c in df.columns]
+        else:
+            tv = [c for c in df.columns if "co2e_" in c and not c.startswith("emission_co2e_subsector_total_")]
 
-        # average duplicates (if any) at the same (region, id, time)
+        # t0 slice, average exact duplicates if any
         keys = [region_col, id_col, time_col]
         g0 = (
             df[df[time_col] == time_period_ref]
@@ -232,28 +237,54 @@ class TemporalDecomposition:
             .mean(numeric_only=True)
         )
 
+        # for each region and var, compare to a deterministic baseline id (min id present at t0)
         for r, sub in g0.groupby(region_col):
+            if sub.empty:
+                continue
+            baseline_id = int(sub[id_col].min())
+            sub = sub.set_index(id_col)
             for v in tv:
-                s = sub.set_index(id_col)[v]
+                if v not in sub.columns:
+                    continue
+                s = sub[v]
                 if s.notna().any():
-                    ref = s.dropna().iloc[0]
-                    same = s.isna() | np.isclose(s, ref, atol=atol, rtol=0)
+                    if baseline_id not in s.index or pd.isna(s.loc[baseline_id]):
+                        # pick first non-NaN if baseline is missing this var
+                        ref = s.dropna().iloc[0]
+                    else:
+                        ref = s.loc[baseline_id]
+                    same = s.isna() | np.isclose(s, ref, atol=atol, rtol=rtol)
                     if not bool(same.all()):
                         bad = s.index[~same].tolist()
                         raise AssertionError(f"Initial-year mismatch in region={r}, var={v}, ids={bad}")
         return True
-    
-    @ staticmethod
-    def assert_equal_t0_totals(df, time_period_ref=7, prefix="emission_co2e_subsector_total_",
-                           id_col="primary_id", region_col="region", time_col="time_period", atol=1e-9):
+
+
+    @staticmethod
+    def assert_equal_t0_totals(
+        df: pd.DataFrame,
+        time_period_ref: int = 7,
+        prefix: str = "emission_co2e_subsector_total_",
+        id_col: str = "primary_id",
+        region_col: str = "region",
+        time_col: str = "time_period",
+        atol: float = 1e-7,
+        rtol: float = 0.0,
+    ) -> bool:
         totals = [c for c in df.columns if c.startswith(prefix)]
         g = df[df[time_col] == time_period_ref]
         for r, sub in g.groupby(region_col):
+            if sub.empty:
+                continue
+            baseline_id = int(sub[id_col].min())
+            sub = sub.set_index(id_col)
             for col in totals:
-                s = sub.set_index(id_col)[col]
+                if col not in sub.columns:
+                    continue
+                s = sub[col]
                 if s.notna().any():
-                    ref = s.dropna().iloc[0]
-                    ok = s.isna() | np.isclose(s, ref, atol=atol, rtol=0)
+                    ref = s.loc[baseline_id] if (baseline_id in s.index and pd.notna(s.loc[baseline_id])) else s.dropna().iloc[0]
+                    ok = s.isna() | np.isclose(s, ref, atol=atol, rtol=rtol)
                     if not bool(ok.all()):
                         bad = s.index[~ok].tolist()
                         raise AssertionError(f"t0 mismatch in totals: region={r}, var={col}, ids={bad}")
