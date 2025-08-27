@@ -15,11 +15,16 @@ import polars as pl
 SCRIPT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR_PATH = os.path.dirname(SCRIPT_DIR_PATH)
 build_path = lambda PATH  : os.path.abspath(os.path.join(*PATH))
-POST_PROCESSED_DIR_PATH = build_path([PARENT_DIR_PATH,"output"])
 CB_DEFAULT_DEFINITION_PATH = build_path([SCRIPT_DIR_PATH, "cb_cost_factors"])
 OUTPUT_CB_PATH = build_path([SCRIPT_DIR_PATH, "cb_results"])
-data_id = "de38bb46-7d00-4cf5-8844-f6cc20695024"
+data_id = "2025-08-17t23;06;14.607675"
 OUTPUT_LOUSIANA_CB_PATH = build_path([OUTPUT_CB_PATH, data_id])
+RUN_DIR_PATH = os.path.join(
+    os.path.dirname(SCRIPT_DIR_PATH), 
+    "data", 
+    "ensemble_data", 
+    f"sisepuede_summary_results_run_sisepuede_run_{data_id}"
+)
 
 # Make sure output directory exists
 os.makedirs(OUTPUT_CB_PATH, exist_ok=True)
@@ -27,8 +32,8 @@ os.makedirs(OUTPUT_LOUSIANA_CB_PATH, exist_ok=True)
 
 ## Load the data
 #ssp_data = pd.read_csv(os.path.join(SSP_RESULTS_PATH, "louisiana.csv"))
-att_primary = pd.read_csv("ATTRIBUTE_PRIMARY.csv")
-att_strategy = pd.read_csv("ATTRIBUTE_STRATEGY.csv")
+att_primary = pd.read_csv(os.path.join(RUN_DIR_PATH, "ATTRIBUTE_PRIMARY.csv"))
+att_strategy = pd.read_csv(os.path.join(RUN_DIR_PATH, "ATTRIBUTE_STRATEGY.csv"))
 
 ## Subset ssp data
 """
@@ -52,22 +57,22 @@ future_id_cli_arg = int(sys.argv[1])
 strategy_id = 6004
 future_id_compare = att_primary.query(f"strategy_id=={strategy_id} and future_id=={future_id_cli_arg}").primary_id.values[0]
 
-future_id_base = 354354
+future_id_base = 394394
 
 primary_ids = [future_id_base, future_id_compare]
 
 
 q = (
-    pl.scan_csv(os.path.join(POST_PROCESSED_DIR_PATH, f"sisepuede_results_IDE_{data_id}.csv"), ignore_errors=True)
+    pl.scan_csv(os.path.join(RUN_DIR_PATH, f"sisepuede_results_IDE_{data_id}.csv"), ignore_errors=True)
     .filter(
         pl.col('primary_id').is_in(primary_ids)
     )
 )
 
 ssp_data = q.collect().to_pandas()
-primary_id_base = 354354
+primary_id_base = 394394
 
-ssp_data["primary_id"] = ssp_data["primary_id"].replace({ 354354 : 0})
+ssp_data["primary_id"] = ssp_data["primary_id"].replace({ 394394 : 0})
 ssp_data = ssp_data.replace(np.nan, 0.0)
 
 ## Define base strategy
