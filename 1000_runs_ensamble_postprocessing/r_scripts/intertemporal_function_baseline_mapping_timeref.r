@@ -67,9 +67,8 @@ target_total <- subset(te_all,sector_gas==sector_gas_i)[,"tvalue"] #estimate tar
 uncalibrated_total <- sum(data [data$time_period==time_period_ref & data$Index==ref_inds,tv1] , na.rm=TRUE) #estimate uncalibrated total
 deviation_factor <- ifelse(uncalibrated_total==0,1.0,(target_total/uncalibrated_total)) #estimate deviation factor
 data [data$time_period==time_period_ref,tv1] <- data [data$time_period==time_period_ref,tv1]* deviation_factor #apply deviation factor
-round(sum(data [data$time_period==time_period_ref & data$Index==ref_inds,tv1], na.rm = TRUE),4) == round(target_total,4) #check sums are equal
-for (j in tv1) data.table::set(data, i = which(is.na(data[[j]])), j = j, value = 0)
-print(paste0("Done sector-gas ",sector_gas_i))
+round(sum(data [data$time_period==time_period_ref & data$Index==ref_inds,tv1] ),4) == round(target_total,4) #check sums are equal 
+
 #if initial value is different than zero use corrected percent differences, otherwise, use percent differences 
 #finally for every var and every index and every time period  
   for (i in 1:length(inds))
@@ -81,7 +80,7 @@ print(paste0("Done sector-gas ",sector_gas_i))
    # init_value <-data[data$Index==inds[i] & data$time_period==time_period_ref, tv1[j]]
    init_value <-data[data$Index==paste0(rall[z],"_",initial_conditions_id) & data$time_period==time_period_ref, tv1[j]]
     if (init_value==0) {
-       data[data$Index==inds[i],tv1[j]]<-init_value+cumsum(pct_diffs[pct_diffs$Index==inds[i], paste0("diff_",tv1[j])]* deviation_factor)
+       data[data$Index==inds[i],tv1[j]]<-init_value+cumsum(pct_diffs[pct_diffs$Index==inds[i], paste0("diff_",tv1[j])])* deviation_factor
     } else {
        time_change <- cumprod((1+pct_diffs[pct_diffs$Index==inds[i], paste0("pct_diff_",tv1[j])]))
        data[data$Index==inds[i],tv1[j]] <- init_value*time_change
@@ -92,16 +91,18 @@ print(paste0("Done sector-gas ",sector_gas_i))
 
 #estimate sector totals 
 subsectors <- unique(te_all$Subsector)
-
 for (a in 1:length(subsectors))
 {
 subsector_vars <- unlist(lapply(subset(te_all,Subsector==subsectors[a])$Vars,function(x){strsplit(x,":")}))
+if (length(subsector_vars)>1)  { 
 data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- rowSums(data[,subsector_vars])
+} else {data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- data[,subsector_vars]}
+
 }
 #print file  
 data$Index <- NULL 
 dim(data)
-fwrite(data,paste0(dir.output,tregion,"_",run,".csv"),row.names=FALSE)
+write.csv(data,paste0(dir.output,tregion,"_",run,".csv"),row.names=FALSE)
 
 rm(data)
 print(paste0(dir.output,tregion,"_",run,".csv"))
