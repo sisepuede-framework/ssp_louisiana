@@ -1,4 +1,5 @@
 #NOTE: Use this script when having an experiment with different future_ids and the same strategy_id.
+# After this you need to run concat_results.py to combine all the results into one single CSV file.
 
 ## Load packages
 from costs_benefits_ssp.cb_calculate import CostBenefits
@@ -12,12 +13,13 @@ from costs_benefits_ssp.model.cb_data_model import TXTable,CostFactor,Transforma
 import polars as pl
 
 ##---- Define Directories ----##
-SCRIPT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+# SCRIPT_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR_PATH = os.getcwd()
 PARENT_DIR_PATH = os.path.dirname(SCRIPT_DIR_PATH)
 build_path = lambda PATH  : os.path.abspath(os.path.join(*PATH))
 CB_DEFAULT_DEFINITION_PATH = build_path([SCRIPT_DIR_PATH, "cb_cost_factors"])
 OUTPUT_CB_PATH = build_path([SCRIPT_DIR_PATH, "cb_results"])
-data_id = "2025-08-17t23;06;14.607675"
+data_id = "2025-08-28t15;29;22.344855"
 OUTPUT_LOUSIANA_CB_PATH = build_path([OUTPUT_CB_PATH, data_id])
 RUN_DIR_PATH = os.path.join(
     os.path.dirname(SCRIPT_DIR_PATH), 
@@ -32,7 +34,7 @@ os.makedirs(OUTPUT_LOUSIANA_CB_PATH, exist_ok=True)
 
 ## Load the data
 #ssp_data = pd.read_csv(os.path.join(SSP_RESULTS_PATH, "louisiana.csv"))
-att_primary = pd.read_csv(os.path.join(RUN_DIR_PATH, "ATTRIBUTE_PRIMARY.csv"))
+att_primary = pd.read_csv(os.path.join(RUN_DIR_PATH, "ATTRIBUTE_PRIMARY_ONLY_6004_AND_BASELINE.csv"))
 att_strategy = pd.read_csv(os.path.join(RUN_DIR_PATH, "ATTRIBUTE_STRATEGY.csv"))
 
 ## Subset ssp data
@@ -49,30 +51,31 @@ To the format:
 0           0          0            0          0
 
 """
-future_id_compare = 0
 att_primary.iloc[0] = [0,0,0,0]
 
 future_id_cli_arg = int(sys.argv[1])
-#future_id_cli_arg = int(1)
-strategy_id = 6004
-future_id_compare = att_primary.query(f"strategy_id=={strategy_id} and future_id=={future_id_cli_arg}").primary_id.values[0]
+# future_id_cli_arg = int(1) #NOTE: For testing purposes only
+primary_id_compare = att_primary.query(f"future_id=={future_id_cli_arg}").primary_id.values[0]
+print(f"Computing CBA for future_id {future_id_cli_arg} and primary_id {primary_id_compare}")
 
-future_id_base = 394394
+primary_id_base = 332332 #NOTE: Change this to your base primary_id
 
-primary_ids = [future_id_base, future_id_compare]
+primary_ids = [primary_id_base, primary_id_compare]
 
 
+# Load df using polars and filter it to only include the base primary id and the primary id to compare
 q = (
-    pl.scan_csv(os.path.join(RUN_DIR_PATH, f"sisepuede_results_IDE_{data_id}.csv"), ignore_errors=True)
+    pl.scan_csv(os.path.join(RUN_DIR_PATH, f"sisepuede_results_IDE_{data_id}_only_6004_and_baseline.csv"), ignore_errors=True)
     .filter(
         pl.col('primary_id').is_in(primary_ids)
     )
 )
 
+# Convert to pandas dataframe
 ssp_data = q.collect().to_pandas()
-primary_id_base = 394394
 
-ssp_data["primary_id"] = ssp_data["primary_id"].replace({ 394394 : 0})
+# Modify the base primary_id so it's 0
+ssp_data["primary_id"] = ssp_data["primary_id"].replace({primary_id_base : 0})
 ssp_data = ssp_data.replace(np.nan, 0.0)
 
 ## Define base strategy
@@ -102,7 +105,7 @@ results_all_pp = cb.cb_process_interactions(results_all)
 # SHIFT any stray costs incurred from 2015 to 2025 to 2025 and 2035
 results_all_pp_shifted = cb.cb_shift_costs(results_all_pp)
 
-results_all_pp_shifted["primary_id"] = future_id_compare
+results_all_pp_shifted["primary_id"] = primary_id_compare
 results_all_pp_shifted["future_id"] = future_id_cli_arg
 
 results_all_pp_shifted.to_csv(os.path.join(OUTPUT_LOUSIANA_CB_PATH, f"cba_la_{future_id_cli_arg}.csv"), index = False)

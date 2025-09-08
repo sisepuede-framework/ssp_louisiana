@@ -1,4 +1,4 @@
-# First step of decomposition pipeline
+#NOTE: First step of decomposition pipeline
 # This script parses a large CSV file containing simulation data and splits it into individual files based on unique primary IDs.
 # Each individual file is saved in a directory named after the run ID.
 # It ensures that the necessary directories exist and handles the creation of output files.
@@ -13,9 +13,9 @@ DATA_DIR_PATH = os.path.join(SCRIPT_DIR_PATH, "data")
 ENSEMBLE_DIR_PATH = os.path.join(DATA_DIR_PATH, "ensemble_data")
 
 
-run_id = "2025-08-27T11;02;10.572056"
+run_id = "2025-08-28t15;29;22.344855" #NOTE: Change this to your run ID
 RUN_ENSEMBLE_DIR_PATH = os.path.join(ENSEMBLE_DIR_PATH, f"sisepuede_summary_results_run_sisepuede_run_{run_id}")
-file_name = "WIDE_INPUTS_OUTPUTS.csv"
+file_name = "9a7fe49a-fef0-4d39-bcd1-d677f91da13d.csv" #NOTE: Change this to your file name
 full_path = os.path.join(RUN_ENSEMBLE_DIR_PATH, file_name)
 
 # Read the big CSV
