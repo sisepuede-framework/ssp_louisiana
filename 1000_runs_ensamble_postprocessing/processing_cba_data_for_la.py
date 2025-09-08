@@ -51,6 +51,7 @@ wide_cb = (
 
 # If you prefer flat columns after pivot (remove the name from columns):
 wide_cb.columns.name = None
+print("unique future_id values:", wide_cb["future_id"].nunique())
 
 # --- save ---
 wide_cb.to_csv(out_file, index=False)
