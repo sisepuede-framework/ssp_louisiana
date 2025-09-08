@@ -20,7 +20,7 @@ build_path = lambda PATH  : os.path.abspath(os.path.join(*PATH))
 POST_PROCESSED_DIR_PATH = build_path([PARENT_DIR_PATH,"output"])
 CB_DEFAULT_DEFINITION_PATH = build_path([SCRIPT_DIR_PATH, "cb_cost_factors"])
 OUTPUT_CB_PATH = build_path([SCRIPT_DIR_PATH, "cb_results"])
-data_id = "2025-08-17T22;36;58.136929"
+data_id = "2025-08-27T11;02;10.572056"
 OUTPUT_LOUSIANA_CB_PATH = build_path([OUTPUT_CB_PATH, data_id])
 RUN_RAW_DATA_DIR_PATH = os.path.join(ENSEMBLE_DIR_PATH, f"sisepuede_summary_results_run_sisepuede_run_{data_id}")
 
