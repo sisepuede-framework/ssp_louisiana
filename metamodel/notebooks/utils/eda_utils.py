@@ -193,9 +193,30 @@ class EDAUtils:
         return outlier_pct[outlier_pct > 0].to_dict()
     
     @staticmethod
-    def get_target_var_corr(df, target_var, threshold=0.1, return_dict=False):
+    def get_target_var_corr(df, target_var, threshold=0.1, exclude_cols=None, return_dict=False):
+        """
+        Print and optionally return correlations of all columns with the target variable,
+        excluding specified columns.
+
+        Args:
+            df: DataFrame
+            target_var: str, name of target variable
+            threshold: float, minimum absolute correlation to report
+            exclude_cols: list of str, columns to exclude from output (including target_var itself)
+            return_dict: bool, whether to return the dict of correlations
+
+        Returns:
+            dict or None
+        """
+        if exclude_cols is None:
+            exclude_cols = []
+        exclude_cols = set(exclude_cols)
+        exclude_cols.add(target_var)
+
         corr = df.corr()[target_var].abs()
+        corr = corr.drop(labels=exclude_cols, errors='ignore')
         corr_dict = corr[corr > threshold].sort_values(ascending=False).to_dict()
+
         print("\n" + "="*50)
         print(f"Correlation with target variable '{target_var}' (threshold: {threshold}):")
         print("-"*50)
