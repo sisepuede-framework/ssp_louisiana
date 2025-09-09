@@ -9,7 +9,7 @@ data_id = "2025-08-28t15;29;22.344855"
 RUN_DIR_PATH = os.path.join(ENSEMBLE_DIR_PATH, f"sisepuede_summary_results_run_sisepuede_run_{data_id}")
 
 # in_file = os.path.join(OUTPUT_DIR_PATH, f"combined_cb_results_{data_id}.csv")
-in_file = os.path.join(RUN_DIR_PATH, f"combined_cb_results_updated_2025-08-28t15;29;22.344855.csv")
+in_file = os.path.join(RUN_DIR_PATH, f"combined_cb_results_updated_2025-08-28t15;29;22.344855_metamodel_version.csv")
 out_file = os.path.join(RUN_DIR_PATH, f"wide_cb_data_lhc_{data_id}.csv")
 
 # --- load ---
