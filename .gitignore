@@ -178,3 +178,11 @@ metamodel/data/ssp
 metamodel/config/
 jobs_data_prep/data/*
 narrative_profiles/data/simulations/*
+1000_runs_ensamble_postprocessing/data/*
+1000_runs_ensamble_postprocessing/cb/cb_results/*
+1000_runs_ensamble_postprocessing/output/*
+1000_runs_ensamble_postprocessing/tableau/*
+
+
+# ignore ds_store files
+.DS_Store

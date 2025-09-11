@@ -144,15 +144,79 @@ class EDAUtils:
         return desc[['mean','std','skew','kurtosis', 'min','25%','50%','75%','max','missing_pct']]
 
     @staticmethod
-    def find_outlier_columns(df, z_thresh=3.0):
-        zs = df.apply(zscore).abs()
-        outlier_pct = (zs > z_thresh).sum() / len(df) * 100
-        return outlier_pct[outlier_pct>0].to_dict()
+    def find_outlier_columns(
+        df: pd.DataFrame,
+        method: str = "zscore",      # "zscore" or "iqr"
+        z_thresh: float = 3.0,       # for z-score
+        factor: float = 1.5,         # for IQR
+        robust: bool = False,        # median/MAD z-score
+        ddof: int = 0                # std ddof for normal z-score
+    ):
+        """
+        Calculate the percentage of outliers per column.
+
+        Returns:
+            dict {column_name: percentage_of_outliers}
+        """
+        numeric_cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+        if not numeric_cols:
+            return {}
+
+        X = df[numeric_cols]
+
+        if method.lower() == "zscore":
+            if robust:
+                med = X.median(axis=0, skipna=True)
+                mad = (X - med).abs().median(axis=0, skipna=True)
+                denom = 1.4826 * mad.replace(0, np.nan)
+                Z = (X - med) / denom
+            else:
+                mu = X.mean(axis=0, skipna=True)
+                std = X.std(axis=0, ddof=ddof, skipna=True)
+                denom = std.replace(0, np.nan)
+                Z = (X - mu) / denom
+
+            outlier_mask = Z.abs() > z_thresh
+
+        elif method.lower() == "iqr":
+            Q1 = X.quantile(0.25)
+            Q3 = X.quantile(0.75)
+            IQR = Q3 - Q1
+            lower = Q1 - factor * IQR
+            upper = Q3 + factor * IQR
+            outlier_mask = (X.lt(lower)) | (X.gt(upper))
+
+        else:
+            raise ValueError("method must be 'zscore' or 'iqr'")
+
+        outlier_pct = (outlier_mask.sum() / len(X) * 100).round(2)
+        return outlier_pct[outlier_pct > 0].to_dict()
     
     @staticmethod
-    def get_target_var_corr(df, target_var, threshold=0.1, return_dict=False):
+    def get_target_var_corr(df, target_var, threshold=0.1, exclude_cols=None, return_dict=False):
+        """
+        Print and optionally return correlations of all columns with the target variable,
+        excluding specified columns.
+
+        Args:
+            df: DataFrame
+            target_var: str, name of target variable
+            threshold: float, minimum absolute correlation to report
+            exclude_cols: list of str, columns to exclude from output (including target_var itself)
+            return_dict: bool, whether to return the dict of correlations
+
+        Returns:
+            dict or None
+        """
+        if exclude_cols is None:
+            exclude_cols = []
+        exclude_cols = set(exclude_cols)
+        exclude_cols.add(target_var)
+
         corr = df.corr()[target_var].abs()
+        corr = corr.drop(labels=exclude_cols, errors='ignore')
         corr_dict = corr[corr > threshold].sort_values(ascending=False).to_dict()
+
         print("\n" + "="*50)
         print(f"Correlation with target variable '{target_var}' (threshold: {threshold}):")
         print("-"*50)
@@ -185,11 +249,81 @@ class EDAUtils:
 
 
 class DataCleaningUtils:
-
     @staticmethod
-    def remove_outliers(df, z_thresh=3.0):
-        zs = df.apply(zscore).abs()
-        outlier_mask = (zs > z_thresh).any(axis=1)
-        return df[~outlier_mask]
+    def remove_outliers(
+        df: pd.DataFrame,
+        method: str = "zscore",          # "zscore" or "iqr"
+        z_thresh: float = 3.0,           # for z-score method
+        factor: float = 1.5,             # for IQR method (Tukey rule)
+        cols: list | None = None,        # which columns to check; default numeric cols
+        how: str = "any",                # "any" -> drop if any col is an outlier; "all" -> only if all are
+        return_mask: bool = False,       # return boolean mask instead of filtered df
+        robust: bool = False,            # robust Z using median/MAD
+        ddof: int = 0                    # std ddof for non-robust Z
+    ):
+        """
+        Remove (or flag) outliers by Z-score or IQR.
+
+        method="zscore":
+          - If robust=False: Z = (x - mean) / std
+          - If robust=True:  Z = (x - median) / (1.4826 * MAD)
+          - Flags |Z| > z_thresh
+
+        method="iqr":
+          - Bounds: [Q1 - factor*IQR, Q3 + factor*IQR]
+          - Flags values outside bounds
+
+        Only numeric columns are considered (or 'cols' if provided).
+        NaNs never count as outliers.
+        """
+        if cols is None:
+            cols = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+        if not cols:
+            mask = pd.Series(False, index=df.index)  # nothing to check
+            return mask if return_mask else df.copy()
+
+        X = df[cols].copy()
+
+        if method.lower() == "zscore":
+            if robust:
+                med = X.median(axis=0, skipna=True)
+                mad = (X - med).abs().median(axis=0, skipna=True)
+                # scale factor 1.4826 => MAD ~ std for Normal
+                denom = 1.4826 * mad.replace(0, np.nan)
+                Z = (X - med) / denom
+            else:
+                mu = X.mean(axis=0, skipna=True)
+                std = X.std(axis=0, ddof=ddof, skipna=True)
+                denom = std.replace(0, np.nan)
+                Z = (X - mu) / denom
+
+            # NaNs in Z (from zero denom or original NaNs) should not trigger outliers
+            outlier_cols = Z.abs() > z_thresh
+
+        elif method.lower() == "iqr":
+            Q1 = X.quantile(0.25)
+            Q3 = X.quantile(0.75)
+            IQR = Q3 - Q1
+            # If IQR=0, bounds collapse to the constant value
+            lower = Q1 - factor * IQR
+            upper = Q3 + factor * IQR
+            outlier_cols = (X.lt(lower)) | (X.gt(upper))
+        else:
+            raise ValueError("method must be 'zscore' or 'iqr'")
+
+        # Combine across columns; NaNs are treated as non-outliers
+        if how == "any":
+            row_outliers = outlier_cols.any(axis=1, skipna=True)
+        elif how == "all":
+            # treat NaN as False so it doesn't force True
+            row_outliers = outlier_cols.fillna(False).all(axis=1)
+        else:
+            raise ValueError("how must be 'any' or 'all'")
+
+        if return_mask:
+            return row_outliers
+
+        return df.loc[~row_outliers].copy()
+
 
     

@@ -86,9 +86,17 @@ def _local_bfgs(x0: np.ndarray, prob: Problem) -> np.ndarray:
     )
     return res.x if res.success else x0
 
-# --------------------------------------------------------------------------- #
-# 3. public optimise()
-# --------------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------
+# 3. public optimise()  — general, robust for 1..K objectives
+# ---------------------------------------------------------------------------
+from typing import Sequence
+import numpy as np
+import pandas as pd
+from pymoo.optimize import minimize
+from pymoo.algorithms.soo.nonconvex.ga import GA
+from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.util.nds.non_dominated_sorting import NonDominatedSorting
+
 def optimise(
     pipeline,
     X_ref: pd.DataFrame,
@@ -105,49 +113,107 @@ def optimise(
 
     Returns
     -------
-    • single metric → (best_X : pd.Series, best_value : float)  
+    • single metric → (best_X : pd.Series, best_value : float)
     • multi  metric → (pareto_X : pd.DataFrame, pareto_F : pd.DataFrame)
+
+    Notes
+    -----
+    - Goals are case-insensitive and may include synonyms e.g. "min", "minimize",
+      "minimise", "max", "maximize".
+    - For multi-objective, pareto_F values are in the ORIGINAL metric space
+      (i.e., not negated for max goals).
     """
-    # normalise arg types
     if isinstance(targets, str):
         targets = [targets]
     if isinstance(goals, str):
         goals = [goals]
-    if len(targets) != len(goals):
-        raise ValueError("targets and goals lengths differ")
 
+    # --- canonicalize goals -------------------------------------------------
+    _syn_min = {"min", "minimize", "minimise", "minimization", "minimisation"}
+    _syn_max = {"max", "maximize", "maximise", "maximization", "maximisation"}
+    goals = [g.strip().lower() for g in goals]
+    goals = ["min" if g in _syn_min else "max" if g in _syn_max else g for g in goals]
+
+    if len(targets) != len(goals):
+        raise ValueError(f"targets ({len(targets)}) and goals ({len(goals)}) lengths differ")
+
+    if any(g not in ("min", "max") for g in goals):
+        bad = [g for g in goals if g not in ("min", "max")]
+        raise ValueError(f"Unrecognized goals: {bad}. Use one of {{'min','max'}} (case-insensitive).")
+
+    if n_restarts < 1:
+        raise ValueError("n_restarts must be >= 1")
+
+    # construct pymoo problem in minimization space (your existing helper)
     prob = _make_problem(pipeline, X_ref, train_targets, targets, goals)
 
-    def _one_run(seed):
-        algo = GA(pop_size=pop_size, eliminate_duplicates=True) if len(targets) == 1 \
-               else NSGA2(pop_size=pop_size, eliminate_duplicates=True)
+    # --- one run (single vs multi) -----------------------------------------
+    def _one_run(seed: int):
+        if len(targets) == 1:
+            algo = GA(pop_size=pop_size, eliminate_duplicates=True)
+        else:
+            algo = NSGA2(pop_size=pop_size, eliminate_duplicates=True)
         return minimize(prob, algo, ("n_gen", n_gen), seed=seed, verbose=False)
 
     results = [_one_run(seed) for seed in range(n_restarts)]
 
     # ---------------- single-objective -------------------------------------
     if len(targets) == 1:
-        best_ga = min(results, key=lambda r: r.F[0])  # minimise in pymoo space
-        best_x_vec = _local_bfgs(best_ga.X, prob)
+        # pymoo returns the best (min) value in r.F; pick the best across restarts
+        def _scalar_F(res):
+            f = np.asarray(res.F).reshape(-1)
+            if f.size != 1:
+                raise ValueError(f"Expected single-objective F with size 1, got shape {res.F.shape}")
+            return float(f[0])
 
-        best_y = prob.evaluate(best_x_vec[None, :])[0, 0]   # ndarray slice
-        if goals[0] == "max":
-            best_y *= -1
+        best_ga = min(results, key=_scalar_F)
+
+        # optional local refinement (keep GA if refinement fails)
+        x0 = np.asarray(best_ga.X).reshape(-1)
+        try:
+            best_x_vec = _local_bfgs(x0, prob)  # expects (x_init, problem)
+        except Exception:
+            best_x_vec = x0
+
+        # Evaluate in minimization space then convert back to original metric
+        f_minspace = prob.evaluate(best_x_vec[None, :]).reshape(-1)[0]
+        # If the user wanted "max", the objective was negated inside the problem.
+        # Convert back to ORIGINAL metric value here.
+        best_y = -f_minspace if goals[0] == "max" else f_minspace
 
         best_x = pd.Series(best_x_vec, index=X_ref.columns, name="best_policy")
         return best_x, float(best_y)
 
     # ---------------- multi-objective --------------------------------------
-    X_all = np.vstack([r.pop.get("X") for r in results])
-    F_all = np.vstack([r.pop.get("F") for r in results])
+    # Stack all final pops, then extract the nondominated front (rank 0)
+    X_all = np.vstack([np.asarray(r.pop.get("X")) for r in results])
+    F_all = np.vstack([np.asarray(r.pop.get("F")) for r in results])
 
+    # Non-dominated sort in minimization space
     nds = NonDominatedSorting()
     I = nds.do(F_all, only_non_dominated_front=True)
+    X_nd = X_all[I]
+    F_nd_minspace = F_all[I]
 
-    sign = np.array([1.0 if g == "min" else -1.0 for g in goals])
-    pareto_X = pd.DataFrame(X_all[I], columns=X_ref.columns)
-    pareto_F = pd.DataFrame(F_all[I] * sign, columns=targets)
+    # Convert back to ORIGINAL metric space by undoing any internal negation
+    # For goals == "max", values in minimization space were negated -> re-negate
+    sign = np.array([(-1.0 if g == "max" else 1.0) for g in goals], dtype=float)
+    F_nd_original = F_nd_minspace * sign
+
+    # De-duplicate across restarts (tolerant to tiny float noise)
+    # Concatenate X and F for a stable duplicate check, then split back.
+    XF = np.concatenate([X_nd, F_nd_original], axis=1)
+    # Round to reduce floating-point jitter; adjust decimals as needed.
+    XF_df = pd.DataFrame(np.round(XF, 10))
+    XF_df = XF_df.drop_duplicates(ignore_index=True)
+    n_x = X_ref.shape[1]
+    X_unique = XF_df.iloc[:, :n_x].to_numpy()
+    F_unique = XF_df.iloc[:, n_x:].to_numpy()
+
+    pareto_X = pd.DataFrame(X_unique, columns=X_ref.columns)
+    pareto_F = pd.DataFrame(F_unique, columns=list(targets))
     return pareto_X, pareto_F
+
 
 # --------------------------------------------------------------------------- #
 # 4. plotting helpers
