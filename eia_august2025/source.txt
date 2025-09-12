@@ -1,0 +1,16 @@
+ALL TABLES (EXCEL):
+	SOURCE:		https://www.eia.gov/electricity/annual/
+
+
+
+
+
+SPECIALIZED DOWNLOAD:
+	NAME:		20250902_net_generation_for_all_sectors_query.csv
+	SOURCE:		https://www.eia.gov/electricity/data/browser/#/topic/0?agg=2,0,1&fuel=vtvv&geo=vvvvvvvvvvvvo&sec=g&linechart=ELEC.GEN.ALL-US-99.A&columnchart=ELEC.GEN.ALL-US-99.A&map=ELEC.GEN.ALL-US-99.A&freq=A&start=2001&end=2024&ctype=columnchart&ltype=pin&rtype=s&pin=&rse=0&maptype=0
+
+
+
+WTHDRAWALS FROM GAS WELLS:
+	NAME:		N9011LA2a.xls
+	SOURCE:		https://www.eia.gov/dnav/ng/hist/n9011la2a.htm
