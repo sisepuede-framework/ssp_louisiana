@@ -187,6 +187,8 @@ narrative_profiles/data/simulations/*
 
 
 # ignore ds_store files
-*.DS_Store
+.DS_Store
 *.Rproj.user
 *.Rproj
+.Rproj.user
+.Rhistory

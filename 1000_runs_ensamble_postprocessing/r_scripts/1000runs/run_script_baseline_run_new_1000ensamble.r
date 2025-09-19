@@ -16,9 +16,9 @@ output.folder <- '1000_runs_ensamble_postprocessing/ensemble_data/meta/'
 dir.output <- '1000_runs_ensamble_postprocessing/ensemble_data/meta_decomposed/'
 
 files_names <- list.files(output.folder,".csv")
-removes <- c(404928,404929,404930,404931,404932,404933,404934,404935,404936,404937,404938,404939,404940,404941,404942,404943,404944,404945,404946,404947,404948)
-removes <- paste0(as.character(removes),".csv")
-files_names <- subset(files_names,!(files_names%in%removes))
+# removes <- c(404928,404929,404930,404931,404932,404933,404934,404935,404936,404937,404938,404939,404940,404941,404942,404943,404944,404945,404946,404947,404948)
+# removes <- paste0(as.character(removes),".csv")
+# files_names <- subset(files_names,!(files_names%in%removes))
 
 #for (run in 1:length(files_names))
 chunks <- split(1:length(files_names), cut(1:length(files_names), 10, labels = FALSE))
@@ -41,33 +41,36 @@ dim(data_all)
 data_all <- subset(data_all,time_period>=time_period_ref)
 dim(data_all)
 
-source('1000_runs_ensamble_postprocessing/r_scripts/intertemporal_function_baseline_mapping_timeref.r')
+source('1000_runs_ensamble_postprocessing/r_scripts/1000runs/intertemporal_function_baseline_mapping_timeref.r')
 z<-1
 rescale(z,rall,data_all,te_all,initial_conditions_id,dir.output,time_period_ref,run)    
 }
 
 
 #now collect all decomposed runs and the experimental files 
+setDTthreads(0)
 files <- list.files(dir.output, pattern = "\\.csv$", full.names = TRUE)
 dt <- rbindlist(lapply(files, fread), use.names = TRUE, fill = TRUE)
-
-weird_runs <- c(403425,403434,403454,403554,402522,403810,403873,404177,404330,404375,404410,404485,404502,
-                404804,404965,404988,405073,405225,405369,402744,402758,403085,402469,403128,403214,403261,403386,
-                405108,403318,405108,403447)
-
 dim(dt)
-dt <- subset(dt,!(primary_id%in%weird_runs))
-dim(dt)
+
+# weird_runs <- c(403425,403434,403454,403554,402522,403810,403873,404177,404330,404375,404410,404485,404502,
+#                 404804,404965,404988,405073,405225,405369,402744,402758,403085,402469,403128,403214,403261,403386,
+#                 405108,403318,405108,403447)
+# dt <- subset(dt,!(primary_id%in%weird_runs))
+# dim(dt)
+
+
+
 
 # merge with attributes
-run <-' 1000_runs_ensamble_postprocessing/ssp_output/sisepuede_run_2025-08-28t15;29;22.344855/'
+run <-'1000_runs_ensamble_postprocessing/ssp_output/sisepuede_run_2025-09-18t09;19;22.726476/'
 att <- fread(paste0(run, 'ATTRIBUTE_PRIMARY.csv'))
 dt <- merge(dt, att, by="primary_id", all.x=TRUE)
 
-table(dt$strategy_id)
+table(att$strategy_id, exclude = NULL)
 
-out_path <- '1000_runs_ensamble_postprocessing/ensemble_data/out/sisepuede_results_IDE_2025-08-28t15;29;22.344855.csv'
+out_path <- '1000_runs_ensamble_postprocessing/ensemble_data/out/sisepuede_results_IDE_2025-09-18t09;19;22.726476.csv'
 fwrite(dt, out_path)
 
 #upload to S3
-aws s3 cp "/Users/fabianfuentes/Desktop/test/ensamble/out/sisepuede_results_IDE_2025-08-28t15;29;22.344855.csv" 's3://sisepuede-data/transfers/sisepuede_run_2025-08-28t15;29;22.344855/'
+aws s3 cp "/Users/fabianfuentes/git/ssp_louisiana/1000_runs_ensamble_postprocessing/ensemble_data/out/sisepuede_results_IDE_2025-09-18t09;19;22.726476.csv" 's3://sisepuede-data/transfers/sisepuede_run_2025-09-18t09;19;22.726476/'
