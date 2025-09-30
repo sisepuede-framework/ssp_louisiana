@@ -3,13 +3,13 @@ file.name <- paste0(region,".csv")
 iso_code3 <- iso_code3
 Country <- region
 
-mapping <- read.csv(paste0("1000_runs_ensamble_postprocessing/r_scripts/output_postprocessing/data/mapping_corrected_",region,".csv"))
+mapping <- read.csv(paste0("1000_runs_ensamble_postprocessing/r_scripts/output_postprocessing/data/sisepuede_edgar_active_crosswalk.csv"))
 
 # modification of AG - Livestock:N2O subsector matching
 # mapping$Vars[3] <- "emission_co2e_n2o_lsmm_direct_anaerobic_digester:emission_co2e_n2o_lsmm_direct_anaerobic_lagoon:emission_co2e_n2o_lsmm_direct_composting:emission_co2e_n2o_lsmm_direct_daily_spread:emission_co2e_n2o_lsmm_direct_deep_bedding:emission_co2e_n2o_lsmm_direct_dry_lot:emission_co2e_n2o_lsmm_direct_incineration:emission_co2e_n2o_lsmm_direct_liquid_slurry:emission_co2e_n2o_lsmm_direct_paddock_pasture_range:emission_co2e_n2o_lsmm_direct_poultry_manure:emission_co2e_n2o_lsmm_direct_storage_solid:emission_co2e_n2o_lsmm_indirect_anaerobic_digester:emission_co2e_n2o_lsmm_indirect_anaerobic_lagoon:emission_co2e_n2o_lsmm_indirect_composting:emission_co2e_n2o_lsmm_indirect_daily_spread:emission_co2e_n2o_lsmm_indirect_deep_bedding:emission_co2e_n2o_lsmm_indirect_dry_lot:emission_co2e_n2o_lsmm_indirect_incineration:emission_co2e_n2o_lsmm_indirect_liquid_slurry:emission_co2e_n2o_lsmm_indirect_paddock_pasture_range:emission_co2e_n2o_lsmm_indirect_poultry_manure:emission_co2e_n2o_lsmm_indirect_storage_solid"
 
 # add edgar
-edgar <- read.csv('1000_runs_ensamble_postprocessing/cw/emission_targets_louisiana_all_years_1990_2021.csv')
+edgar <- read.csv('1000_runs_ensamble_postprocessing/cw/emission_targets_louisiana_all_years_1990_2021_new_model.csv')
 edgar <- data.frame(edgar)
 edgar <- subset(edgar,Code==iso_code3)
 edgar$Edgar_Class<- paste(edgar$CSC.Subsector,edgar$Gas,sep=":")

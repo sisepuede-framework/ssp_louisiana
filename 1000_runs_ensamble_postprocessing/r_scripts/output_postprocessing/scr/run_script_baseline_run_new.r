@@ -2,7 +2,7 @@
 # This script runs the intertemporal decomposition for the baseline run
 ################################################################################
 
-te_all <- fread(paste0("1000_runs_ensamble_postprocessing/r_scripts/output_postprocessing/data/emission_targets_",region,"_",year_ref,".csv")) 
+te_all <- fread(paste0("1000_runs_ensamble_postprocessing/r_scripts/output_postprocessing/data/emission_targets_",iso_code3,"_",year_ref,".csv")) 
 te_all <- data.frame(te_all)
 #te_all <- subset(te_all,Subsector%in%c( "lvst","lsmm","agrc","ippu","waso","trww","frst","lndu","soil"))
 target_country <- iso_code3

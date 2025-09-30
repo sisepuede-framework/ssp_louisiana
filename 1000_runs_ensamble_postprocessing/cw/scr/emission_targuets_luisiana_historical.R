@@ -12,7 +12,7 @@ options(digits = 10)
 yrs <- as.character(1990:2021)
 
 # historical emissions
-df <- fread('1000_runs_ensamble_postprocessing/cw/scr/Louisiana_historical_emissions.csv')
+df <- fread('1000_runs_ensamble_postprocessing/cw/scr/Louisiana_historical_emissions_new_model.csv')
 setDT(df)
 
 # --- Helper: robust splitter for c("a","b") OR "a|b" OR "a,b" ---
@@ -168,4 +168,4 @@ head(df_classified)
 df_classified$Code <- "LA"
 
 # Escribir a disco
-fwrite(df_classified, '1000_runs_ensamble_postprocessing/cw/emission_targets_louisiana_all_years_1990_2021.csv', row.names = FALSE)
+fwrite(df_classified, '1000_runs_ensamble_postprocessing/cw/emission_targets_louisiana_all_years_1990_2021_new_model.csv', row.names = FALSE)

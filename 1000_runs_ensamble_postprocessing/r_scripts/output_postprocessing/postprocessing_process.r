@@ -11,7 +11,7 @@ library(ggplot2)
 rm(list=ls())
 
 #ouputfile
-dir.output  <- "1000_runs_ensamble_postprocessing/ssp_output/sisepuede_summary_results_run_sisepuede_run_2025-09-17T01;49;45.687668/"
+dir.output  <- "1000_runs_ensamble_postprocessing/ssp_output/sisepuede_summary_results_run_sisepuede_run_2025-09-29T00;17;26.495491/"
 output.file <- "WIDE_INPUTS_OUTPUTS.csv"
 
 region <- "louisiana" 
