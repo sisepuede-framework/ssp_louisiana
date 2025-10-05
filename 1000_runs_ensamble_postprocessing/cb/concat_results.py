@@ -8,7 +8,7 @@ PARENT_DIR_PATH = os.path.dirname(SCRIPT_DIR_PATH)
 build_path = lambda PATH  : os.path.abspath(os.path.join(*PATH))
 CB_DEFAULT_DEFINITION_PATH = build_path([SCRIPT_DIR_PATH, "cb_cost_factors"])
 OUTPUT_CB_PATH = build_path([SCRIPT_DIR_PATH, "cb_results"])
-data_id = "2025-08-28t15;29;22.344855"
+data_id = "2025-09-18t09;19;22.726476"
 RUN_OUTPUT_CB_PATH = build_path([OUTPUT_CB_PATH, data_id])
 OUTPUT_LOUSIANA_CB_PATH = build_path([OUTPUT_CB_PATH, data_id])
 RUN_DIR_PATH = os.path.join(
@@ -38,5 +38,6 @@ output_file = os.path.join(RUN_DIR_PATH, f"combined_cb_results_{data_id}.csv")
 print(f"Shape of combined DataFrame: {combined_df.shape}")
 print(f"Null values in the combined DataFrame: {combined_df.isnull().sum()}")
 print(f"Unique future_id values: {combined_df['future_id'].nunique()}")
+print(f"Unique primary_id values: {combined_df['primary_id'].nunique()}")
 combined_df.to_csv(output_file, index=False)
 print(f"Combined {len(csv_files)} CSV files into: {output_file}")
