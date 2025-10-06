@@ -20,7 +20,7 @@ build_path = lambda PATH  : os.path.abspath(os.path.join(*PATH))
 POST_PROCESSED_DIR_PATH = build_path([PARENT_DIR_PATH,"output"])
 CB_DEFAULT_DEFINITION_PATH = build_path([SCRIPT_DIR_PATH, "cb_cost_factors"])
 OUTPUT_CB_PATH = build_path([SCRIPT_DIR_PATH, "cb_results"])
-data_id = "2025-08-17T22;36;58.136929"
+data_id = "2025-09-18t09;19;22.726476"
 OUTPUT_LOUSIANA_CB_PATH = build_path([OUTPUT_CB_PATH, data_id])
 RUN_RAW_DATA_DIR_PATH = os.path.join(ENSEMBLE_DIR_PATH, f"sisepuede_summary_results_run_sisepuede_run_{data_id}")
 
@@ -30,8 +30,8 @@ os.makedirs(OUTPUT_CB_PATH, exist_ok=True)
 os.makedirs(OUTPUT_LOUSIANA_CB_PATH, exist_ok=True)
 
 ## Load the data
-ssp_data = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, f"sisepuede_results_IDE_{data_id}.csv"))
-att_primary = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, "ATTRIBUTE_PRIMARY.csv"))
+ssp_data = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, f"sisepuede_results_IDE_{data_id}_cleaned.csv"))
+att_primary = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, "ATTRIBUTE_PRIMARY_tornado.csv"))
 att_strategy = pd.read_csv(os.path.join(RUN_RAW_DATA_DIR_PATH, "ATTRIBUTE_STRATEGY.csv"))
 
 ## Define base strategy

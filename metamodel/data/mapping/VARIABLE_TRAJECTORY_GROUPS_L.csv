@@ -1,0 +1,468 @@
+transformation_code,variable,variable_field,variable_trajectory_group
+TX:AGRC:DEC_CH4_RICE,:math:\text{CH}_4 Crop Anaerobic Decomposition Emission Factor,ef_agrc_anaerobicdom_rice_kg_ch4_ha,1
+TX:AGRC:DEC_LOSSES_SUPPLY_CHAIN,Fraction of Food Produced Lost Before Consumption,frac_agrc_agriculture_production_lost,2
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,Fraction of Residues Burned,frac_agrc_crop_residues_burned,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,Fraction of Residues Removed,frac_agrc_crop_residues_removed,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,No Till Crop Fraction,frac_agrc_no_till_cereals,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,No Till Crop Fraction,frac_agrc_no_till_fibers,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,No Till Crop Fraction,frac_agrc_no_till_other_annual,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,No Till Crop Fraction,frac_agrc_no_till_pulses,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,No Till Crop Fraction,frac_agrc_no_till_tubers,3
+TX:AGRC:INC_CONSERVATION_AGRICULTURE,No Till Crop Fraction,frac_agrc_no_till_vegetables_and_vines,3
+TX:CCSQ:INC_CAPTURE,Annual Capture and Sequestration by Type,qty_ccsq_mt_co2_captured_sequestered_by_direct_air_capture,4
+TX:ENTC:DEC_LOSSES,Electrical Transmission Loss Fraction,frac_enfu_transmission_loss_fuel_electricity,5
+TX:ENTC:TARGET_CLEAN_HYDROGEN,NemoMod MinShareProduction,nemomod_entc_frac_min_share_production_fp_hydrogen_electrolysis,6
+TX:ENTC:TARGET_RENEWABLE_ELEC,NemoMod REMinProductionTarget,nemomod_enfu_renewable_energy_minimum_production_target_fuel_electricity,7
+TX:ENTC:TARGET_RENEWABLE_ELEC,NemoMod MinShareProduction,nemomod_entc_frac_min_share_production_pp_biomass,7
+TX:ENTC:TARGET_RENEWABLE_ELEC,NemoMod MinShareProduction,nemomod_entc_frac_min_share_production_pp_coal,7
+TX:ENTC:TARGET_RENEWABLE_ELEC,NemoMod MinShareProduction,nemomod_entc_frac_min_share_production_pp_gas,7
+TX:ENTC:TARGET_RENEWABLE_ELEC,NemoMod MinShareProduction,nemomod_entc_frac_min_share_production_pp_nuclear,7
+TX:ENTC:TARGET_RENEWABLE_ELEC,NemoMod MinShareProduction,nemomod_entc_frac_min_share_production_pp_oil,7
+TX:FGTV:DEC_LEAKS,Reduction in Fugitive Leaks,frac_fgtv_reduction_in_fugitive_leaks,8
+TX:FGTV:INC_FLARE,Fraction Non-Fugitive :math:\text{CH}_4 Flared,frac_fgtv_drained_and_waste_ch4_flared_fuel_coal,9
+TX:FGTV:INC_FLARE,Fraction Non-Fugitive :math:\text{CH}_4 Flared,frac_fgtv_drained_and_waste_ch4_flared_fuel_oil,9
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_biomass,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_coal,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_coke,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_diesel,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_electricity,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_furnace_gas,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_gasoline,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_hydrocarbon_gas_liquids,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_hydrogen,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_kerosene,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_natural_gas,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_oil,10
+TX:INEN:INC_EFFICIENCY_ENERGY,Average Industrial Energy Fuel Efficiency Factor,efficfactor_enfu_industrial_energy_fuel_solar,10
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_cement,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_chemicals,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_electronics,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_glass,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_lime_and_carbonite,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_metals,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_mining,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_other_product_manufacturing,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_paper,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_plastic,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_glass,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_metals,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_paper,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_plastic,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_rubber_and_leather,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_textiles,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_recycled_wood,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_rubber_and_leather,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_textiles,11
+TX:INEN:INC_EFFICIENCY_PRODUCTION,Industrial Energy Demand Scalar,scalar_inen_energy_demand_wood,11
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_agriculture_and_livestock_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_agriculture_and_livestock_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_agriculture_and_livestock_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_agriculture_and_livestock_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_agriculture_and_livestock_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_agriculture_and_livestock_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_cement_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_cement_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_cement_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_cement_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_cement_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_cement_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_cement_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_cement_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_cement_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_cement_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_chemicals_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_chemicals_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_chemicals_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_chemicals_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_chemicals_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_chemicals_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_chemicals_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_chemicals_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_electronics_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_electronics_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_electronics_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_electronics_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_electronics_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_electronics_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_electronics_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_glass_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_glass_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_glass_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_glass_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_glass_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_glass_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_glass_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_glass_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_glass_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_glass_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_lime_and_carbonite_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_lime_and_carbonite_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_lime_and_carbonite_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_lime_and_carbonite_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_lime_and_carbonite_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_lime_and_carbonite_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_lime_and_carbonite_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_lime_and_carbonite_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_lime_and_carbonite_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_lime_and_carbonite_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_metals_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_metals_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_metals_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_metals_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_metals_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_metals_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_metals_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_mining_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_mining_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_mining_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_mining_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_mining_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_mining_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_other_product_manufacturing_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_other_product_manufacturing_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_other_product_manufacturing_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_other_product_manufacturing_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_other_product_manufacturing_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_other_product_manufacturing_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_other_product_manufacturing_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_other_product_manufacturing_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_other_product_manufacturing_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_paper_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_paper_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_paper_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_paper_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solar,frac_inen_energy_paper_solar,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_paper_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_plastic_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_plastic_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_plastic_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_plastic_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_plastic_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_recycled_glass_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_recycled_glass_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_recycled_glass_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_glass_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_recycled_glass_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_recycled_glass_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_glass_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_recycled_glass_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_recycled_glass_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_recycled_metals_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_recycled_metals_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_metals_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_recycled_metals_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_metals_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_recycled_metals_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_paper_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_recycled_paper_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Hydrogen,frac_inen_energy_recycled_paper_hydrogen,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_paper_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solar,frac_inen_energy_recycled_paper_solar,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_recycled_paper_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_recycled_plastic_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_plastic_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_recycled_plastic_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_plastic_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_recycled_plastic_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_recycled_rubber_and_leather_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_rubber_and_leather_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_recycled_rubber_and_leather_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_recycled_rubber_and_leather_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_rubber_and_leather_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_recycled_rubber_and_leather_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_textiles_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_recycled_textiles_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_textiles_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_recycled_wood_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_recycled_wood_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_recycled_wood_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_recycled_wood_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_recycled_wood_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_recycled_wood_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_recycled_wood_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_recycled_wood_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_recycled_wood_solid_biomass,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_rubber_and_leather_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_rubber_and_leather_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_rubber_and_leather_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_rubber_and_leather_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_rubber_and_leather_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_rubber_and_leather_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_textiles_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_textiles_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_textiles_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coal,frac_inen_energy_wood_coal,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Coke,frac_inen_energy_wood_coke,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Diesel,frac_inen_energy_wood_diesel,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Electricity,frac_inen_energy_wood_electricity,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Furnace Gas,frac_inen_energy_wood_furnace_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Gasoline,frac_inen_energy_wood_gasoline,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Natural Gas,frac_inen_energy_wood_natural_gas,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Oil,frac_inen_energy_wood_oil,12
+TX:INEN:SHIFT_FUEL_HEAT,Industrial Energy Fuel Fraction Solid Biomass,frac_inen_energy_wood_solid_biomass,12
+TX:IPPU:DEC_CLINKER,Clinker Fraction of Cement,frac_ippu_cement_clinker,13
+TX:IPPU:DEC_HFCS,HFC-143a GDP Product Use Emission Factor,ef_ippu_tonne_c2h3f3_per_mmm_gdp_product_use_ods_refrigeration,14
+TX:IPPU:DEC_HFCS,HFC-125 GDP Product Use Emission Factor,ef_ippu_tonne_c2hf5_per_mmm_gdp_product_use_ods_other,14
+TX:IPPU:DEC_HFCS,HFC-125 GDP Product Use Emission Factor,ef_ippu_tonne_c2hf5_per_mmm_gdp_product_use_ods_refrigeration,14
+TX:IPPU:DEC_HFCS,HFC-236fa GDP Product Use Emission Factor,ef_ippu_tonne_c3h2f6_per_mmm_gdp_product_use_ods_other,14
+TX:IPPU:DEC_HFCS,HFC-236fa GDP Product Use Emission Factor,ef_ippu_tonne_c3h2f6_per_mmm_gdp_product_use_ods_refrigeration,14
+TX:IPPU:DEC_HFCS,HFC-32 GDP Product Use Emission Factor,ef_ippu_tonne_ch2f2_per_mmm_gdp_product_use_ods_refrigeration,14
+TX:IPPU:DEC_HFCS,HFC-32 Production Process Emission Factor,ef_ippu_tonne_ch2f2_per_tonne_production_electronics,14
+TX:IPPU:DEC_HFCS,HFC-134a GDP Product Use Emission Factor,ef_ippu_tonne_chf2cf3_per_mmm_gdp_product_use_ods_other,14
+TX:IPPU:DEC_HFCS,HFC-134a GDP Product Use Emission Factor,ef_ippu_tonne_chf2cf3_per_mmm_gdp_product_use_ods_refrigeration,14
+TX:IPPU:DEC_HFCS,HFC-23 GDP Product Use Emission Factor,ef_ippu_tonne_chf3_per_mmm_gdp_product_use_ods_other,14
+TX:IPPU:DEC_HFCS,HFC-23 GDP Product Use Emission Factor,ef_ippu_tonne_chf3_per_mmm_gdp_product_use_ods_refrigeration,14
+TX:IPPU:DEC_HFCS,HFC-23 Production Process Emission Factor,ef_ippu_tonne_chf3_per_tonne_production_chemicals,14
+TX:IPPU:DEC_HFCS,HFC-23 Production Process Emission Factor,ef_ippu_tonne_chf3_per_tonne_production_electronics,14
+TX:IPPU:DEC_N2O,:math:\text{N}_2\text{O} GDP Production Process Emission Factor,ef_ippu_tonne_n2o_per_mmm_gdp_other_product_manufacturing,15
+TX:IPPU:DEC_N2O,:math:\text{N}_2\text{O} Production Process Emission Factor,ef_ippu_tonne_n2o_per_tonne_production_chemicals,15
+TX:IPPU:DEC_N2O,:math:\text{N}_2\text{O} Production Process Emission Factor,ef_ippu_tonne_n2o_per_tonne_production_electronics,15
+TX:IPPU:DEC_PFCS,PFC-116 GDP Product Use Emission Factor,ef_ippu_tonne_c2f6_per_mmm_gdp_product_use_ods_other,16
+TX:IPPU:DEC_PFCS,PFC-116 Production Process Emission Factor,ef_ippu_tonne_c2f6_per_tonne_production_electronics,16
+TX:IPPU:DEC_PFCS,PFC-116 Production Process Emission Factor,ef_ippu_tonne_c2f6_per_tonne_production_metals,16
+TX:IPPU:DEC_PFCS,PFC-218 Production Process Emission Factor,ef_ippu_tonne_c3f8_per_tonne_production_electronics,16
+TX:IPPU:DEC_PFCS,PFC-1114 Production Process Emission Factor,ef_ippu_tonne_c4f6_per_tonne_production_electronics,16
+TX:IPPU:DEC_PFCS,PFC-C-1418 Production Process Emission Factor,ef_ippu_tonne_c5f8_per_tonne_production_electronics,16
+TX:IPPU:DEC_PFCS,PFC-C-318 Production Process Emission Factor,ef_ippu_tonne_cc4f8_per_tonne_production_electronics,16
+TX:IPPU:DEC_PFCS,PFC-14 GDP Product Use Emission Factor,ef_ippu_tonne_cf4_per_mmm_gdp_product_use_ods_other,16
+TX:IPPU:DEC_PFCS,PFC-14 Production Process Emission Factor,ef_ippu_tonne_cf4_per_tonne_production_electronics,16
+TX:IPPU:DEC_PFCS,PFC-14 Production Process Emission Factor,ef_ippu_tonne_cf4_per_tonne_production_metals,16
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_mangroves_to_croplands,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_mangroves_to_flooded,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_mangroves_to_forests_mangroves,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_croplands,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_flooded,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_forests_primary,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_forests_secondary,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_settlements,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_wetlands,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_croplands,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_flooded,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_forests_secondary,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_grasslands,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_pastures,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_settlements,17
+TX:LNDU:DEC_DEFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_wetlands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_croplands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_flooded,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_grasslands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_pastures,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_settlements,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_croplands_to_wetlands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_flooded_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_mangroves_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_primary_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_croplands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_flooded,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_grasslands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_pastures,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_settlements,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_forests_secondary_to_wetlands,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_grasslands_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_pastures_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_settlements_to_forests_secondary,17
+TX:LNDU:INC_REFORESTATION,Unadjusted Land Use Transition Probability,pij_lndu_wetlands_to_forests_secondary,17
+TX:LNDU:DEC_SOC_LOSS_PASTURES,Fraction of Pastures Improved,frac_lndu_improved_pastures,18
+TX:LNDU:PLUR,Land Use Yield Reallocation Factor,lndu_reallocation_factor,19
+TX:LSMM:INC_CAPTURE_BIOGAS,Biogas Recovery Factor at LSMM Anaerobic Facilities,gasrf_lsmm_biogas_anaerobic_digester,20
+TX:LSMM:INC_CAPTURE_BIOGAS,Biogas Recovery Factor at LSMM Anaerobic Facilities,gasrf_lsmm_biogas_anaerobic_lagoon,20
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_cattle_dairy_anaerobic_digester,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Anaerobic Lagoon,frac_lvst_mm_cattle_dairy_anaerobic_lagoon,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Composting,frac_lvst_mm_cattle_dairy_composting,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_cattle_dairy_daily_spread,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_cattle_dairy_liquid_slurry,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_cattle_dairy_paddock_pasture_range,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_cattle_dairy_solid_storage,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_cattle_nondairy_anaerobic_digester,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Composting,frac_lvst_mm_cattle_nondairy_composting,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_cattle_nondairy_daily_spread,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_cattle_nondairy_dry_lot,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_cattle_nondairy_liquid_slurry,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_cattle_nondairy_paddock_pasture_range,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_cattle_nondairy_solid_storage,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_pigs_anaerobic_digester,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Anaerobic Lagoon,frac_lvst_mm_pigs_anaerobic_lagoon,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Composting,frac_lvst_mm_pigs_composting,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_pigs_daily_spread,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_pigs_dry_lot,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_pigs_liquid_slurry,21
+TX:LSMM:INC_MANAGEMENT_CATTLE_PIGS,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_pigs_solid_storage,21
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_buffalo_anaerobic_digester,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Lagoon,frac_lvst_mm_buffalo_anaerobic_lagoon,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Composting,frac_lvst_mm_buffalo_composting,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_buffalo_daily_spread,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_buffalo_dry_lot,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_buffalo_liquid_slurry,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_buffalo_paddock_pasture_range,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_buffalo_solid_storage,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_goats_anaerobic_digester,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Composting,frac_lvst_mm_goats_composting,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_goats_daily_spread,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_goats_dry_lot,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_goats_paddock_pasture_range,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_goats_solid_storage,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_horses_anaerobic_digester,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Lagoon,frac_lvst_mm_horses_anaerobic_lagoon,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Composting,frac_lvst_mm_horses_composting,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_horses_daily_spread,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_horses_dry_lot,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_horses_liquid_slurry,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_horses_paddock_pasture_range,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_horses_solid_storage,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_mules_anaerobic_digester,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Lagoon,frac_lvst_mm_mules_anaerobic_lagoon,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Composting,frac_lvst_mm_mules_composting,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_mules_daily_spread,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_mules_dry_lot,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_mules_liquid_slurry,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_mules_paddock_pasture_range,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_mules_solid_storage,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_sheep_anaerobic_digester,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Composting,frac_lvst_mm_sheep_composting,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_sheep_daily_spread,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Dry Lot,frac_lvst_mm_sheep_dry_lot,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_sheep_paddock_pasture_range,22
+TX:LSMM:INC_MANAGEMENT_OTHER,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_sheep_solid_storage,22
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Anaerobic Digester,frac_lvst_mm_chickens_anaerobic_digester,23
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Anaerobic Lagoon,frac_lvst_mm_chickens_anaerobic_lagoon,23
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Daily Spread,frac_lvst_mm_chickens_daily_spread,23
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Liquid Slurry,frac_lvst_mm_chickens_liquid_slurry,23
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Paddock Pasture Range,frac_lvst_mm_chickens_paddock_pasture_range,23
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Poultry Manure,frac_lvst_mm_chickens_poultry_manure,23
+TX:LSMM:INC_MANAGEMENT_POULTRY,Livestock Manure Management Fraction Solid Storage,frac_lvst_mm_chickens_solid_storage,23
+TX:LVST:DEC_ENTERIC_FERMENTATION,:math:\text{CH}_4 Enteric Fermentation Emission Factor,ef_lvst_entferm_buffalo_kg_ch4_head,24
+TX:LVST:DEC_ENTERIC_FERMENTATION,:math:\text{CH}_4 Enteric Fermentation Emission Factor,ef_lvst_entferm_cattle_dairy_kg_ch4_head,24
+TX:LVST:DEC_ENTERIC_FERMENTATION,:math:\text{CH}_4 Enteric Fermentation Emission Factor,ef_lvst_entferm_cattle_nondairy_kg_ch4_head,24
+TX:LVST:DEC_ENTERIC_FERMENTATION,:math:\text{CH}_4 Enteric Fermentation Emission Factor,ef_lvst_entferm_goats_kg_ch4_head,24
+TX:LVST:DEC_ENTERIC_FERMENTATION,:math:\text{CH}_4 Enteric Fermentation Emission Factor,ef_lvst_entferm_sheep_kg_ch4_head,24
+TX:PFLO:INC_HEALTHIER_DIETS,Fraction Eating Red Meat,frac_gnrl_eating_red_meat,25
+TX:PFLO:INC_IND_CCS,Industrial :math:\text{CO}_2 Capture Prevalence,frac_ippu_production_with_co2_capture_cement,26
+TX:PFLO:INC_IND_CCS,Industrial :math:\text{CO}_2 Capture Prevalence,frac_ippu_production_with_co2_capture_chemicals,26
+TX:PFLO:INC_IND_CCS,Industrial :math:\text{CO}_2 Capture Prevalence,frac_ippu_production_with_co2_capture_metals,26
+TX:PFLO:INC_IND_CCS,Industrial :math:\text{CO}_2 Capture Prevalence,frac_ippu_production_with_co2_capture_plastic,26
+TX:SCOE:DEC_DEMAND_HEAT,SCOE Heat Energy Demand Scalar,scalar_scoe_heat_energy_demand_commercial_municipal,27
+TX:SCOE:DEC_DEMAND_HEAT,SCOE Heat Energy Demand Scalar,scalar_scoe_heat_energy_demand_other_se,27
+TX:SCOE:DEC_DEMAND_HEAT,SCOE Heat Energy Demand Scalar,scalar_scoe_heat_energy_demand_residential,27
+TX:SCOE:INC_EFFICIENCY_APPLIANCE,SCOE Appliance Energy Demand Scalar,scalar_scoe_appliance_energy_demand_commercial_municipal,28
+TX:SCOE:INC_EFFICIENCY_APPLIANCE,SCOE Appliance Energy Demand Scalar,scalar_scoe_appliance_energy_demand_other_se,28
+TX:SCOE:INC_EFFICIENCY_APPLIANCE,SCOE Appliance Energy Demand Scalar,scalar_scoe_appliance_energy_demand_residential,28
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Diesel,frac_scoe_heat_energy_commercial_municipal_diesel,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Electricity,frac_scoe_heat_energy_commercial_municipal_electricity,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Gasoline,frac_scoe_heat_energy_commercial_municipal_gasoline,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Hydrocarbon Gas Liquids,frac_scoe_heat_energy_commercial_municipal_hydrocarbon_gas_liquids,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Natural Gas,frac_scoe_heat_energy_commercial_municipal_natural_gas,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Diesel,frac_scoe_heat_energy_other_se_diesel,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Electricity,frac_scoe_heat_energy_other_se_electricity,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Gasoline,frac_scoe_heat_energy_other_se_gasoline,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Hydrocarbon Gas Liquids,frac_scoe_heat_energy_other_se_hydrocarbon_gas_liquids,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Kerosene,frac_scoe_heat_energy_other_se_kerosene,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Natural Gas,frac_scoe_heat_energy_other_se_natural_gas,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Diesel,frac_scoe_heat_energy_residential_diesel,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Electricity,frac_scoe_heat_energy_residential_electricity,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Hydrocarbon Gas Liquids,frac_scoe_heat_energy_residential_hydrocarbon_gas_liquids,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Kerosene,frac_scoe_heat_energy_residential_kerosene,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Natural Gas,frac_scoe_heat_energy_residential_natural_gas,29
+TX:SCOE:SHIFT_FUEL_HEAT,SCOE Fraction Heat Energy Demand Solid Biomass,frac_scoe_heat_energy_residential_solid_biomass,29
+TX:SOIL:DEC_LIME_APPLIED,Liming Demand Scalar,demscalar_soil_liming_per_area,30
+TX:SOIL:DEC_N_APPLIED,Fertilizer N Demand Scalar,demscalar_soil_fertilizer_n_per_area,31
+TX:TRDE:DEC_DEMAND,Transportation Demand Scalar,demscalar_trde_freight,32
+TX:TRDE:DEC_DEMAND,Transportation Demand Scalar,demscalar_trde_private_and_public,32
+TX:TRDE:DEC_DEMAND,Transportation Demand Scalar,demscalar_trde_regional,32
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_aviation_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_powered_bikes_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_public_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_rail_freight_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_rail_passenger_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_road_heavy_freight_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_road_heavy_regional_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_road_light_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_ELECTRIC,Electrical Vehicle Efficiency,elecfuelefficiency_trns_water_borne_km_per_kwh,33
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_aviation_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Kerosene,fuelefficiency_trns_aviation_kerosene_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Gasoline,fuelefficiency_trns_powered_bikes_gasoline_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Biofuels,fuelefficiency_trns_public_biofuels_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_public_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Gasoline,fuelefficiency_trns_public_gasoline_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrocarbon Gas Liquids,fuelefficiency_trns_public_hydrocarbon_gas_liquids_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_public_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_public_natural_gas_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_rail_freight_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_rail_freight_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_rail_freight_natural_gas_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_rail_passenger_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_rail_passenger_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_rail_passenger_natural_gas_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Biofuels,fuelefficiency_trns_road_heavy_freight_biofuels_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_road_heavy_freight_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Gasoline,fuelefficiency_trns_road_heavy_freight_gasoline_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrocarbon Gas Liquids,fuelefficiency_trns_road_heavy_freight_hydrocarbon_gas_liquids_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_road_heavy_freight_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_road_heavy_freight_natural_gas_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Biofuels,fuelefficiency_trns_road_heavy_regional_biofuels_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_road_heavy_regional_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Gasoline,fuelefficiency_trns_road_heavy_regional_gasoline_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrocarbon Gas Liquids,fuelefficiency_trns_road_heavy_regional_hydrocarbon_gas_liquids_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_road_heavy_regional_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_road_heavy_regional_natural_gas_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Biofuels,fuelefficiency_trns_road_light_biofuels_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_road_light_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Gasoline,fuelefficiency_trns_road_light_gasoline_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrocarbon Gas Liquids,fuelefficiency_trns_road_light_hydrocarbon_gas_liquids_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_road_light_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_road_light_natural_gas_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Diesel,fuelefficiency_trns_water_borne_diesel_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Hydrogen,fuelefficiency_trns_water_borne_hydrogen_km_per_litre,34
+TX:TRNS:INC_EFFICIENCY_NON_ELECTRIC,Fuel Efficiency Natural Gas,fuelefficiency_trns_water_borne_natural_gas_km_per_litre,34
+TX:TRNS:INC_OCCUPANCY_LIGHT_DUTY,Average Passenger Vehicle Occupancy Rate,occrate_trns_passenger_per_vehicle_road_light,35
+TX:TRNS:SHIFT_FUEL_LIGHT_DUTY,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_road_light_diesel,36
+TX:TRNS:SHIFT_FUEL_LIGHT_DUTY,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_road_light_electricity,36
+TX:TRNS:SHIFT_FUEL_LIGHT_DUTY,Transportation Mode Fuel Fraction Gasoline,frac_trns_fuelmix_road_light_gasoline,36
+TX:TRNS:SHIFT_FUEL_MARITIME,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_water_borne_diesel,37
+TX:TRNS:SHIFT_FUEL_MARITIME,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_water_borne_electricity,37
+TX:TRNS:SHIFT_FUEL_MARITIME,Transportation Mode Fuel Fraction Hydrogen,frac_trns_fuelmix_water_borne_hydrogen,37
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_public_diesel,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_public_electricity,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Gasoline,frac_trns_fuelmix_public_gasoline,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Hydrogen,frac_trns_fuelmix_public_hydrogen,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_road_heavy_freight_diesel,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_road_heavy_freight_electricity,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Gasoline,frac_trns_fuelmix_road_heavy_freight_gasoline,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Hydrogen,frac_trns_fuelmix_road_heavy_freight_hydrogen,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_road_heavy_regional_diesel,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_road_heavy_regional_electricity,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Gasoline,frac_trns_fuelmix_road_heavy_regional_gasoline,38
+TX:TRNS:SHIFT_FUEL_MEDIUM_DUTY,Transportation Mode Fuel Fraction Hydrogen,frac_trns_fuelmix_road_heavy_regional_hydrogen,38
+TX:TRNS:SHIFT_FUEL_RAIL,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_rail_freight_diesel,39
+TX:TRNS:SHIFT_FUEL_RAIL,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_rail_freight_electricity,39
+TX:TRNS:SHIFT_FUEL_RAIL,Transportation Mode Fuel Fraction Diesel,frac_trns_fuelmix_rail_passenger_diesel,39
+TX:TRNS:SHIFT_FUEL_RAIL,Transportation Mode Fuel Fraction Electricity,frac_trns_fuelmix_rail_passenger_electricity,39
+TX:TRNS:SHIFT_MODE_FREIGHT,Freight Transportation Mode Share,frac_trns_mtkm_dem_freight_aviation,40
+TX:TRNS:SHIFT_MODE_FREIGHT,Freight Transportation Mode Share,frac_trns_mtkm_dem_freight_rail_freight,40
+TX:TRNS:SHIFT_MODE_FREIGHT,Freight Transportation Mode Share,frac_trns_mtkm_dem_freight_road_heavy_freight,40
+TX:TRNS:SHIFT_MODE_PASSENGER,Private and Public Transportation Mode Share,frac_trns_pkm_dem_private_and_public_human_powered,41
+TX:TRNS:SHIFT_MODE_PASSENGER,Private and Public Transportation Mode Share,frac_trns_pkm_dem_private_and_public_powered_bikes,41
+TX:TRNS:SHIFT_MODE_PASSENGER,Private and Public Transportation Mode Share,frac_trns_pkm_dem_private_and_public_public,41
+TX:TRNS:SHIFT_MODE_PASSENGER,Private and Public Transportation Mode Share,frac_trns_pkm_dem_private_and_public_road_light,41
+TX:TRNS:SHIFT_MODE_REGIONAL,Regional Transportation Mode Share,frac_trns_pkm_dem_regional_aviation,42
+TX:TRNS:SHIFT_MODE_REGIONAL,Regional Transportation Mode Share,frac_trns_pkm_dem_regional_road_heavy_regional,42
+TX:TRNS:SHIFT_MODE_REGIONAL,Regional Transportation Mode Share,frac_trns_pkm_dem_regional_road_light,42
+TX:TRWW:INC_CAPTURE_BIOGAS,Biogas Recovery Factor at Wastewater Treatment Plants,gasrf_trww_biogas_treated_advanced_aerobic,43
+TX:TRWW:INC_CAPTURE_BIOGAS,Biogas Recovery Factor at Wastewater Treatment Plants,gasrf_trww_biogas_treated_advanced_anaerobic,43
+TX:TRWW:INC_CAPTURE_BIOGAS,Biogas Recovery Factor at Wastewater Treatment Plants,gasrf_trww_biogas_treated_secondary_aerobic,43
+TX:TRWW:INC_CAPTURE_BIOGAS,Biogas Recovery Factor at Wastewater Treatment Plants,gasrf_trww_biogas_treated_secondary_anaerobic,43
+TX:WASO:INC_ANAEROBIC_AND_COMPOST,Fraction of Waste Treated Anaerobically,frac_waso_biogas_food,44
+TX:WASO:INC_ANAEROBIC_AND_COMPOST,Fraction of Waste Treated Anaerobically,frac_waso_biogas_sludge,44
+TX:WASO:INC_ANAEROBIC_AND_COMPOST,Fraction of Waste Treated Anaerobically,frac_waso_biogas_yard,44
+TX:WASO:INC_ANAEROBIC_AND_COMPOST,Fraction of Waste Composted,frac_waso_compost_food,44
+TX:WASO:INC_ANAEROBIC_AND_COMPOST,Fraction of Waste Composted,frac_waso_compost_sludge,44
+TX:WASO:INC_ANAEROBIC_AND_COMPOST,Fraction of Waste Composted,frac_waso_compost_yard,44
+TX:WASO:INC_ENERGY_FROM_BIOGAS,Fraction of Landfill Gas Recovered for Energy,frac_waso_lgc_recovered_for_energy,45
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_glass,46
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_metal,46
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_paper,46
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_plastic,46
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_rubber_leather,46
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_textiles,46
+TX:WASO:INC_RECYCLING,Fraction of Waste Recycled,frac_waso_recycled_wood,46

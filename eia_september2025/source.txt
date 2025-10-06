@@ -1,0 +1,2 @@
+ALL TABLES (EXCEL):
+	SOURCE:		https://www.eia.gov/electricity/data.php#gencapacity
