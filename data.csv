@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Error><Code>PermanentRedirect</Code><Message>The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.</Message><Endpoint>sisepuede-data.s3.amazonaws.com</Endpoint><Bucket>sisepuede-data</Bucket><RequestId>PSB282YA4SBRETPE</RequestId><HostId>/GZzx6B6dmDEOO3NypQD9gb++1AYIfa/28a7Yyfp7xsTfx+DnEEIzytv1X6xhUu0DJCDgDkbLP8=</HostId></Error>
