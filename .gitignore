@@ -192,3 +192,6 @@ narrative_profiles/data/simulations/*
 *.Rproj
 .Rproj.user
 .Rhistory
+
+
+tornado/
