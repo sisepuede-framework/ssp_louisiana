@@ -186,3 +186,5 @@ narrative_profiles/data/simulations/*
 
 # ignore ds_store files
 .DS_Store
+
+tornado/
