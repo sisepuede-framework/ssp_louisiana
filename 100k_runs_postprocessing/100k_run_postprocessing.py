@@ -422,14 +422,14 @@ for primary_id_to_decompose in primary_ids:
     s3_key = f"{S3_CB_DIR_PREFIX}cb_{primary_id_to_decompose}.csv"
     upload_df_to_s3(agg_cb_df, S3_RESOURCE, BUCKET_NAME, s3_key)
 
-
     # --------------------------
-    # Eliminate local files
+    # Eliminate local file for current primary_id
     # --------------------------
-    for fname in os.listdir(TMP_DIR_PATH):
-        if f"louisiana_{PRIMARY_ID_BASE}.csv" not in fname:
-            try:
-                os.remove(os.path.join(TMP_DIR_PATH, fname))
-                logger.info(f"Deleted: {fname}")
-            except Exception as e:
-                logger.warning(f"Could not delete {fname}: {e}")
+    fname = f"louisiana_{primary_id_to_decompose}.csv"
+    file_path = os.path.join(TMP_DIR_PATH, fname)
+    if os.path.exists(file_path) and primary_id_to_decompose != PRIMARY_ID_BASE:
+        try:
+            os.remove(file_path)
+            logger.info(f"Deleted: {fname}")
+        except Exception as e:
+            logger.warning(f"Could not delete {fname}: {e}")
