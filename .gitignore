@@ -196,5 +196,10 @@ narrative_profiles/data/simulations/*
 
 tornado/
 
+# Ignore everything in the tmp directory
 100k_runs_postprocessing/tmp/*
+
+# But not this file
+!100k_runs_postprocessing/tmp/louisiana_36800368.csv
+
 100k_runs_postprocessing/config/aws_credentials_config.yaml
