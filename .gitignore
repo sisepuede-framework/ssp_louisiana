@@ -182,7 +182,19 @@ narrative_profiles/data/simulations/*
 1000_runs_ensamble_postprocessing/cb/cb_results/*
 1000_runs_ensamble_postprocessing/output/*
 1000_runs_ensamble_postprocessing/tableau/*
+1000_runs_ensamble_postprocessing/ensemble_data/*
+1000_runs_ensamble_postprocessing/ssp_output/*
 
 
 # ignore ds_store files
 .DS_Store
+*.Rproj.user
+*.Rproj
+.Rproj.user
+.Rhistory
+
+
+tornado/
+
+100k_runs_postprocessing/tmp/*
+100k_runs_postprocessing/config/aws_credentials_config.yaml

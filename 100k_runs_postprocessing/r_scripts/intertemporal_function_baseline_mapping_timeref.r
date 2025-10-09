@@ -91,11 +91,13 @@ round(sum(data [data$time_period==time_period_ref & data$Index==ref_inds,tv1] ),
 
 #estimate sector totals 
 subsectors <- unique(te_all$Subsector)
-
 for (a in 1:length(subsectors))
 {
 subsector_vars <- unlist(lapply(subset(te_all,Subsector==subsectors[a])$Vars,function(x){strsplit(x,":")}))
+if (length(subsector_vars)>1)  { 
 data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- rowSums(data[,subsector_vars])
+} else {data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- data[,subsector_vars]}
+
 }
 #print file  
 data$Index <- NULL 
