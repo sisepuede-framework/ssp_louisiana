@@ -8,6 +8,7 @@ import traceback
 from io import StringIO
 from typing import List, Optional, Tuple
 import multiprocessing as mp
+import shutil  # NEW: for cleanup
 
 # Limit threaded libs to avoid oversubscription when we parallelize by processes
 os.environ.setdefault("OMP_NUM_THREADS", "1")
@@ -69,7 +70,7 @@ def sanitize_for_r(df: pd.DataFrame) -> pd.DataFrame:
         if not s.map(_is_scalar).all():
             df[c] = s.astype(str)
         elif s.dtype == "object":
-            df[c] = s.astype("string")
+            df[c] = df[c].astype("string")
     return df
 
 # --------------------------
@@ -105,6 +106,34 @@ def postprocess_cba(cb_raw_df: pd.DataFrame) -> pd.DataFrame:
             cols.append(c)
     return agg_cb_df[cols]
 
+# --- Clean-up helper (keep only baseline, remove cache) ---  # NEW
+def cleanup_tmp(tmp_dir: str, base_id: int, keep_tmp: bool = False) -> None:
+    """Remove all louisiana_*.csv except the baseline, and delete tmp/cache."""
+    if keep_tmp:
+        logger.info("Keeping tmp/ contents (flag --keep-tmp is set).")
+        return
+
+    base_name = f"louisiana_{base_id}.csv"
+    try:
+        for fn in os.listdir(tmp_dir):
+            if fn.startswith("louisiana_") and fn.endswith(".csv") and fn != base_name:
+                fp = os.path.join(tmp_dir, fn)
+                try:
+                    os.remove(fp)
+                    logger.info(f"Deleted: {fn}")
+                except Exception as e:
+                    logger.warning(f"Could not delete {fn}: {e}")
+    except FileNotFoundError:
+        pass
+
+    cache_dir = os.path.join(tmp_dir, "cache")
+    if os.path.isdir(cache_dir):
+        try:
+            shutil.rmtree(cache_dir)
+            logger.info("Removed tmp/cache/")
+        except Exception as e:
+            logger.warning(f"Could not remove tmp/cache/: {e}")
+
 # --------------------------
 # Global (per-process) state for workers
 # --------------------------
@@ -120,7 +149,9 @@ PROC_STATE = {
     "BASE_ID": None,
     # cached on disk; workers will load from here
     "CACHE_DIR": None,
-    "LOCAL_FILES": {}
+    "LOCAL_FILES": {},
+    # NEW: config dir so workers can find cb_config_params.xlsx reliably
+    "CONFIG_DIR": None,
 }
 
 def worker_init(
@@ -133,7 +164,8 @@ def worker_init(
     time_period_ref: int,
     s3_decomp_prefix: str,
     s3_cb_prefix: str,
-    base_primary_id: int
+    base_primary_id: int,
+    config_dir: str,  # NEW
 ):
     """Runs once per worker process."""
     # boto3 resource in this process
@@ -154,6 +186,7 @@ def worker_init(
     PROC_STATE["S3_CB_PREFIX"] = s3_cb_prefix
     PROC_STATE["BASE_ID"] = base_primary_id
     PROC_STATE["CACHE_DIR"] = cache_dir
+    PROC_STATE["CONFIG_DIR"] = config_dir  # NEW
 
     # Local cached files (written by parent)
     PROC_STATE["LOCAL_FILES"] = {
@@ -256,7 +289,6 @@ def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optiona
         # --- Cost Benefits ---
         # lightweight import done here to isolate in worker
         from costs_benefits_ssp.cb_calculate import CostBenefits
-        # from costs_benefits_ssp.model.cb_data_model import TXTable, CostFactor, TransformationCost, StrategyInteraction  # not directly needed here
 
         att_primary_copy = attribute_primary_df.copy()
         # ensure baseline first row is zeros (as per your original)
@@ -279,8 +311,8 @@ def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optiona
         cb = CostBenefits(ssp_data, att_primary_copy, attribute_strategy_df, strategy_code_base)
         cb.ssp_data["future_id"] = 0
 
-        # local config path is the same for all workers
-        cb_config_path = os.path.join(os.path.dirname(PROC_STATE["CACHE_DIR"]), "config", "cb_config_params.xlsx")
+        # Read CB config from the actual config dir sent to workers
+        cb_config_path = os.path.join(PROC_STATE["CONFIG_DIR"], "cb_config_params.xlsx")
         if not os.path.exists(cb_config_path):
             return primary_id_to_decompose, f"CB config not found: {cb_config_path}"
         cb.load_cb_parameters(cb_config_path)
@@ -298,7 +330,7 @@ def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optiona
             s3_key_cb = f"{s3_cb_prefix}cb_{primary_id_to_decompose}.csv"
             upload_df_to_s3(agg_cb_df, s3, bucket, s3_key_cb)
 
-        # Clean up temp file for non-base
+        # Clean up temp file for non-base immediately
         if primary_id_to_decompose != base_id:
             try:
                 os.remove(local_decomp)
@@ -319,6 +351,7 @@ def main():
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) - 1))
     parser.add_argument("--profile", default=None, help="AWS profile name (overrides YAML)")
     parser.add_argument("--run-id", default=None, help="Override RUN_ID (else use value in script)")
+    parser.add_argument("--keep-tmp", action="store_true", help="Keep files in tmp/ (skip cleanup)")  # NEW
     args = parser.parse_args()
 
     # Paths
@@ -399,7 +432,8 @@ def main():
         TIME_PERIOD_REF,
         S3_DECOMPOSED_DIR_PREFIX,
         S3_CB_DIR_PREFIX,
-        PRIMARY_ID_BASE
+        PRIMARY_ID_BASE,
+        CONFIG_DIR_PATH,  # pass the config dir so workers can read cb_config_params.xlsx
     )
 
     logger.info(f"Starting pool with {args.workers} workers…")
@@ -420,6 +454,9 @@ def main():
             logger.warning("… (more errors not shown)")
     else:
         logger.info("All primary_id tasks completed successfully.")
+
+    # Final sweep to ensure only baseline remains in tmp/ and cache is gone  # NEW
+    cleanup_tmp(TMP_DIR_PATH, PRIMARY_ID_BASE, keep_tmp=args.keep_tmp)
 
 if __name__ == "__main__":
     main()
