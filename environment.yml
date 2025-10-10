@@ -1,0 +1,31 @@
+name: ssp_la
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # ---- Core Python version ----
+  - python=3.11
+
+  # ---- Data & ML stack ----
+  - pandas
+  - polars
+  - numpy
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - shap
+  - xgboost
+  - joblib
+  - boto3
+  - notebook
+
+  # ---- Custom package (if on conda-forge) ----
+  # Replace with pip if not available on conda
+  - pip
+  - pip:
+      - costs-benefits-ssp
+
+  # ---- R + base packages ----
+  - r-base
+  - r-essentials     # includes common packages: tidyverse, knitr, rmarkdown, etc.
+  - rpy2             # allows calling R from Python
