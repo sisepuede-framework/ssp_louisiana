@@ -269,7 +269,32 @@ def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optiona
 
         # Upload small summary to S3 (total emissions)
         decomposed_df['total_emissions'] = decomposed_df.filter(like="emission_co2e_subsector_total").sum(axis=1)
-        df_to_upload = decomposed_df[["primary_id", "time_period", "total_emissions"]]
+
+        # Get column names from decomposed_df
+        energy_demand_cols = [col for col in decomposed_df.columns if col.startswith("energy_demand_")]
+        total_value_enfu_cols = [col for col in decomposed_df.columns if col.startswith("totalvalue_enfu_fuel_consumed_inen")]
+
+        # Get columns from input_df (not decomposed_df)
+        frac_inen_energy_cols = [col for col in input_df.columns if col.startswith("frac_inen_energy_")]
+        efficfactor_cols = [col for col in input_df.columns if col.startswith("efficfactor_enfu_industrial_energy_fuel")]
+
+        # Merge efficfactor and frac_inen_energy columns from input_df into decomposed_df for upload
+        df_to_upload = pd.merge(
+            decomposed_df,
+            input_df[["primary_id", "region", "time_period"] + efficfactor_cols + frac_inen_energy_cols],
+            on=["primary_id", "region", "time_period"],
+            how="left"
+        )
+
+        # Select columns to keep for upload
+        cols_to_keep = (
+            ["primary_id", "time_period", "total_emissions"]
+            + efficfactor_cols
+            + energy_demand_cols
+            + frac_inen_energy_cols
+            + total_value_enfu_cols
+        )
+        df_to_upload = df_to_upload[cols_to_keep]
         s3_key = f"{s3_decomp_prefix}emission_total_{primary_id_to_decompose}.csv"
         upload_df_to_s3(df_to_upload, s3, bucket, s3_key)
 
