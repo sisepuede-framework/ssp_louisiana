@@ -25,6 +25,7 @@ import boto3
 import rpy2.robjects as ro
 from rpy2.robjects import pandas2ri, default_converter
 from rpy2.robjects.conversion import localconverter
+from rpy2.rinterface_lib.embedded import RRuntimeError
 
 try:
     from tqdm import tqdm
@@ -108,31 +109,55 @@ def postprocess_cba(cb_raw_df: pd.DataFrame) -> pd.DataFrame:
 
 # --- Clean-up helper (keep only baseline, remove cache) ---  # NEW
 def cleanup_tmp(tmp_dir: str, base_id: int, keep_tmp: bool = False) -> None:
-    """Remove all louisiana_*.csv except the baseline, and delete tmp/cache."""
+    """
+    Remove all contents of tmp_dir except the baseline louisiana_{base_id}.csv file.
+    Also removes any subdirectories (e.g., cache/) entirely.
+    """
     if keep_tmp:
         logger.info("Keeping tmp/ contents (flag --keep-tmp is set).")
         return
 
-    base_name = f"louisiana_{base_id}.csv"
-    try:
-        for fn in os.listdir(tmp_dir):
-            if fn.startswith("louisiana_") and fn.endswith(".csv") and fn != base_name:
-                fp = os.path.join(tmp_dir, fn)
-                try:
-                    os.remove(fp)
-                    logger.info(f"Deleted: {fn}")
-                except Exception as e:
-                    logger.warning(f"Could not delete {fn}: {e}")
-    except FileNotFoundError:
-        pass
+    if not os.path.isdir(tmp_dir):
+        logger.info(f"Temp directory not found: {tmp_dir}")
+        return
 
-    cache_dir = os.path.join(tmp_dir, "cache")
-    if os.path.isdir(cache_dir):
+    base_name = f"louisiana_{base_id}.csv"
+    base_path = os.path.join(tmp_dir, base_name)
+
+    # Warn if baseline doesn't exist; proceed to delete everything in that case.
+    if not os.path.isfile(base_path):
+        logger.warning(f"Baseline file not found at {base_path}. Will delete all contents of tmp/.")
+
+    # Sweep everything in tmp_dir
+    for entry in os.scandir(tmp_dir):
+        path = entry.path
+        name = entry.name
         try:
-            shutil.rmtree(cache_dir)
-            logger.info("Removed tmp/cache/")
+            # Preserve only the exact baseline file
+            if entry.is_file(follow_symlinks=False):
+                if os.path.isfile(base_path) and os.path.samefile(path, base_path):
+                    continue
+                os.remove(path)
+                logger.info(f"Deleted file: {name}")
+
+            elif entry.is_dir(follow_symlinks=False):
+                # Remove entire subdirectories (cache, R outputs, etc.)
+                shutil.rmtree(path)
+                logger.info(f"Removed directory: {name}")
+
+            else:
+                # symlinks or other special files
+                os.unlink(path)
+                logger.info(f"Deleted special file: {name}")
+
         except Exception as e:
-            logger.warning(f"Could not remove tmp/cache/: {e}")
+            logger.warning(f"Could not delete {path}: {e}")
+
+    # Final note
+    if os.path.isfile(base_path):
+        logger.info(f"Cleanup complete. Preserved baseline: {base_name}")
+    else:
+        logger.info("Cleanup complete. No baseline file present to preserve.")
 
 # --------------------------
 # Global (per-process) state for workers
@@ -146,6 +171,7 @@ PROC_STATE = {
     "TIME_PERIOD_REF": None,
     "S3_DECOMP_PREFIX": None,
     "S3_CB_PREFIX": None,
+    "S3_JOBS_DIR_PREFIX": None,
     "BASE_ID": None,
     # cached on disk; workers will load from here
     "CACHE_DIR": None,
@@ -164,6 +190,7 @@ def worker_init(
     time_period_ref: int,
     s3_decomp_prefix: str,
     s3_cb_prefix: str,
+    s3_jobs_dir_prefix: str,  # NEW
     base_primary_id: int,
     config_dir: str,  # NEW
 ):
@@ -184,6 +211,7 @@ def worker_init(
     PROC_STATE["TIME_PERIOD_REF"] = time_period_ref
     PROC_STATE["S3_DECOMP_PREFIX"] = s3_decomp_prefix
     PROC_STATE["S3_CB_PREFIX"] = s3_cb_prefix
+    PROC_STATE["S3_JOBS_DIR_PREFIX"] = s3_jobs_dir_prefix
     PROC_STATE["BASE_ID"] = base_primary_id
     PROC_STATE["CACHE_DIR"] = cache_dir
     PROC_STATE["CONFIG_DIR"] = config_dir  # NEW
@@ -854,6 +882,48 @@ def compute_energy_production(
     annual_pt.to_csv(os.path.join(tmp_dir, f"baseline_costs_and_production_by_prodtype_{primary_id_to_decompose}.csv"), index=False)
     annual_reg.to_csv(os.path.join(tmp_dir, f"baseline_costs_and_production_timeseries_{primary_id_to_decompose}.csv"), index=False)
 
+def run_jobs_r_script(primary_id_to_decompose: int, tmp_dir: str, logger) -> None:
+    """
+    Executes 100k_runs_postprocessing/r_scripts/00-Main.R with
+    PRIMARY_ID_TO_DECOMPOSE set in the R global env.
+
+    We set R's working directory to the repository root so that the
+    R script's `source("100k_runs_postprocessing/...")` works.
+    """
+    # Derive paths from tmp_dir to avoid changing worker_init args:
+    # tmp_dir = <script_dir>/tmp  → script_dir = dirname(tmp_dir)
+    # repo_root has the "100k_runs_postprocessing" folder
+    script_dir = os.path.dirname(os.path.abspath(tmp_dir))                       # …/100k_runs_postprocessing
+    repo_root  = os.path.dirname(script_dir)                                     # …/<repo_root>
+    r_scripts_dir = os.path.join(script_dir, "r_scripts")
+    main_r_path   = os.path.join(r_scripts_dir, "00-Main.R")
+
+    # Normalize to forward slashes for R
+    repo_root_r   = repo_root.replace("\\", "/")
+    main_r_path_r = main_r_path.replace("\\", "/")
+
+    # Sanity checks
+    if not os.path.isfile(main_r_path):
+        raise FileNotFoundError(f"R main script not found: {main_r_path}")
+    if not os.path.isdir(os.path.join(repo_root, "100k_runs_postprocessing")):
+        raise FileNotFoundError(
+            f"Expected folder '100k_runs_postprocessing' not found at repo root: {repo_root}"
+        )
+
+    logger.info(f"Running R jobs for primary_id={primary_id_to_decompose} using {main_r_path}")
+
+    # Tell R where we are and pass the ID
+    ro.r(f'setwd("{repo_root_r}")')
+    ro.r.assign("PRIMARY_ID_TO_DECOMPOSE", int(primary_id_to_decompose))
+
+    try:
+        ro.r['source'](main_r_path_r)
+        logger.info(f"00-Main.R completed for primary_id={primary_id_to_decompose}")
+    except RRuntimeError as e:
+        # Bubble up with context; your outer try/except will log it as a warning
+        raise RuntimeError(f"R failed in 00-Main.R for primary_id={primary_id_to_decompose}: {e}")
+
+
 
 def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optional[str]]:
     """Process a single primary_id. Returns (primary_id, error_msg or None)."""
@@ -866,6 +936,7 @@ def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optiona
         time_ref = PROC_STATE["TIME_PERIOD_REF"]
         s3_decomp_prefix = PROC_STATE["S3_DECOMP_PREFIX"]
         s3_cb_prefix = PROC_STATE["S3_CB_PREFIX"]
+        s3_jobs_prefix = PROC_STATE["S3_JOBS_DIR_PREFIX"]
         base_id = PROC_STATE["BASE_ID"]
 
         # Load cached data (local, fast)
@@ -1023,9 +1094,27 @@ def run_decomposition_worker(primary_id_to_decompose: int) -> Tuple[int, Optiona
 
 
         # Here we call the R scripts to compute jobs
-        
-        
-        
+        try:
+            run_jobs_r_script(primary_id_to_decompose, tmp_dir, logger)
+        except Exception as e:
+            logger.warning(f"run_jobs_r_script failed for {primary_id_to_decompose}: {e}")
+
+        # Here we read the lsu jobs output and upload to S3
+        lsu_jobs_file = os.path.join(tmp_dir, f"lsu_jobs_output_{primary_id_to_decompose}.csv")
+
+        # Read the LSU jobs output
+        try:
+            lsu_jobs_df = pd.read_csv(lsu_jobs_file)
+            logger.info(f"Read LSU jobs output for {primary_id_to_decompose}")
+        except Exception as e:
+            logger.warning(f"Failed to read LSU jobs output for {primary_id_to_decompose}: {e}")
+            lsu_jobs_df = None
+
+        # Upload LSU jobs output to S3 if it was read successfully
+        if lsu_jobs_df is not None:
+            s3_key_lsu = f"{s3_jobs_prefix}lsu_jobs_output_{primary_id_to_decompose}.csv"
+            upload_df_to_s3(lsu_jobs_df, s3, bucket, s3_key_lsu)
+
         # Clean up temp file for non-base immediately
         if primary_id_to_decompose != base_id:
             try:
@@ -1077,6 +1166,7 @@ def main():
     TIME_PERIOD_REF = 7
     S3_DECOMPOSED_DIR_PREFIX = f"{RUN_DB_PREFIX}decomposed_outputs/"
     S3_CB_DIR_PREFIX         = f"{RUN_DB_PREFIX}cb_outputs/"
+    S3_JOBS_DIR_PREFIX       = f"{RUN_DB_PREFIX}jobs_outputs/"
 
     # S3 session (parent) for initial big downloads only
     session = boto3.Session(profile_name=PROFILE_NAME)
@@ -1128,6 +1218,7 @@ def main():
         TIME_PERIOD_REF,
         S3_DECOMPOSED_DIR_PREFIX,
         S3_CB_DIR_PREFIX,
+        S3_JOBS_DIR_PREFIX,
         PRIMARY_ID_BASE,
         CONFIG_DIR_PATH,  # pass the config dir so workers can read cb_config_params.xlsx
     )
