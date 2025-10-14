@@ -19,27 +19,27 @@ parameters <- c(utility_wacc = .07, utility_plant_life = 40)
 
 # ----- Data Load ----- 
 shocks <- list()
-shocks$power <- readRDS("jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/power_shocks.rds")
-shocks$industry <- readRDS("jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/ind_shocks.rds")
-shocks$ccs <- readRDS("jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/ccs_shocks.rds")
-load("jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/raw/clean_data.rda")
+shocks$power    <- readRDS(paste0("100k_runs_postprocessing/tmp/power_shocks_", primary_id, ".rds"))
+shocks$industry <- readRDS(paste0("100k_runs_postprocessing/tmp/ind_shocks_", primary_id, ".rds"))
+shocks$ccs      <- readRDS(paste0("100k_runs_postprocessing/tmp/ccs_shocks_", primary_id, ".rds"))
+load("100k_runs_postprocessing/r_scripts/lsu_files/clean_data.rda")
   
 # ----- Economic Impacts -----
-primaries <- unique(shocks$power$primary_id[shocks$power$primary_id != 36800368]) #primary_id represents scenarios, 0 is baseline
+primaries <- unique(shocks$power$primary_id[shocks$power$primary_id != 0]) #primary_id represents scenarios, 0 is baseline
 
 baseline <- list()
 baseline$power_shocks <- shocks$power  %>%
-  filter(primary_id == 36800368)
+  filter(primary_id == 0)
 baseline$power_impact <- leim_calc(baseline$power_shocks, shock="total_shock", time="time_period") %>%
   collapse_totals_time() 
 
 baseline$industry_shocks <- shocks$industry  %>%
-  filter(primary_id == 36800368)
+  filter(primary_id == 0)
 baseline$industry_impact <- leim_calc(baseline$industry_shocks, shock="total_shock", time="time_period", la_rps="la_rps") %>%
   collapse_totals_time() 
 
 baseline$ccs_shocks <- shocks$ccs  %>%
-  filter(primary_id == 36800368)
+  filter(primary_id == 0)
 #Impact is 0. No effect in baseline.
 
 power_impact <- list()
@@ -88,11 +88,11 @@ for(id in primaries) {
 }
 
 # ----- Data Save -----
-saveRDS(baseline, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanbaseline.rds")
-saveRDS(power_impact, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanpower_impact.rds")
-saveRDS(industry_impact, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanindustry_impact.rds")
-saveRDS(ccs_impact, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanccs_impact.rds")
-saveRDS(power_diff, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanpower_diff.rds")
-saveRDS(industry_diff, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanindustry_diff.rds")
-saveRDS(ccs_diff, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/cleanccs_diff.rds")
-saveRDS(primaries, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/primaries.rds")
+saveRDS(baseline,         paste0("100k_runs_postprocessing/tmp/cleanbaseline_", primary_id, ".rds"))
+saveRDS(power_impact,     paste0("100k_runs_postprocessing/tmp/cleanpower_impact_", primary_id, ".rds"))
+saveRDS(industry_impact,  paste0("100k_runs_postprocessing/tmp/cleanindustry_impact_", primary_id, ".rds"))
+saveRDS(ccs_impact,       paste0("100k_runs_postprocessing/tmp/cleanccs_impact_", primary_id, ".rds"))
+saveRDS(power_diff,       paste0("100k_runs_postprocessing/tmp/cleanpower_diff_", primary_id, ".rds"))
+saveRDS(industry_diff,    paste0("100k_runs_postprocessing/tmp/cleanindustry_diff_", primary_id, ".rds"))
+saveRDS(ccs_diff,         paste0("100k_runs_postprocessing/tmp/cleanccs_diff_", primary_id, ".rds"))
+saveRDS(primaries,        paste0("100k_runs_postprocessing/tmp/primaries_", primary_id, ".rds"))

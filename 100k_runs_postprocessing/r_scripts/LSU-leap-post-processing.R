@@ -1,4 +1,5 @@
 primaries <- unique(shocks$power$primary_id[shocks$power$primary_id != 0]) #primary_id represents scenarios, 0 is baseline
+
 vars_to_keep<-c('la_value_direct',
                 'la_value_indirect',
                 'la_value_induced',
@@ -57,6 +58,6 @@ for(id in primaries){
 output_all<-as.matrix(industry_output[vars_to_keep])+as.matrix(ccs_output[vars_to_keep]+as.matrix(power_output[vars_to_keep]))
 
 output<-cbind(ccs_output[,-which(colnames(ccs_output) %in% vars_to_keep)], output_all)
-write.csv(output, 'jobs_data_prep/lsu_code/Water-Institute-Leap-dev/output/lsu_output_1000_ensemble.csv', row.names=F)
+write.csv(output, paste0("100k_runs_postprocessing/tmp/lsu_jobs_output_", primary_id, ".csv"), row.names=F)
 
 

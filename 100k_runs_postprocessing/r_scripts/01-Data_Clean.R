@@ -96,8 +96,8 @@ shocks <- energy_shocks%>%
     labor_income_shock = revenue_requirement * - labor_income_alloc * 1000000,
     total_shock = solar_capex_shock + wind_capex_shock + other_capex_shock + power_opex_shock + labor_income_shock
   ) %>%
-  select(primary_id, time_period, RIMSID_64, RIMSID_376, solar_capex_shock, wind_capex_shock, other_capex_shock, power_opex_shock, labor_income_shock, total_shock) %>%
-  filter(total_shock != 0)
+  select(primary_id, time_period, RIMSID_64, RIMSID_376, solar_capex_shock, wind_capex_shock, other_capex_shock, power_opex_shock, labor_income_shock, total_shock) #%>%
+  #filter(total_shock != 0)
 
 # ---- This pipeline preps the IO shocks for industrial ----
 ind_shocks <- raw$industrial %>%
@@ -132,7 +132,7 @@ ind_shocks <- raw$industrial %>%
     total_shock = indus_eff_capex_shock + indus_eff_opex_shock,
     la_rps = .47
   ) %>% #DROPPED OTHERS. NOW THE total_shock is just capex+opex
-  filter(total_shock != 0) %>%
+  #filter(total_shock != 0) %>%
   select(primary_id, time_period, la_rps, RIMSID_64, RIMSID_376,indus_eff_capex_shock, 
          indus_eff_opex_shock, indus_eff_demand_coal_shock, indus_eff_demand_coke_shock, 
          indus_eff_demand_diesel_shock, indus_eff_demand_elec_shock, indus_eff_demand_furnace_shock, 
@@ -154,7 +154,7 @@ trans_shocks <- left_join(raw$trans_elec, raw$trans_heavy, by=c("primary_id", "t
     elec_consumption_shock = elec_consumption * (electricity_volume_saved_value + electricity_volume_saved_value_non + electricity_volume_saved_value_rail),
     total_shock = trans_elec_shock + trans_heavy_shock + trans_non_elec_shock + trans_rail_shock + trans_light_shock + elec_consumption_shock 
   ) %>%
-  filter(total_shock != 0) %>%
+  #filter(total_shock != 0) %>%
   select(primary_id, time_period, RIMSID_64, RIMSID_376, trans_elec_shock, trans_heavy_shock, trans_non_elec_shock, trans_rail_shock, trans_light_shock, elec_consumption_shock, total_shock) 
   
   
@@ -162,11 +162,11 @@ trans_shocks <- left_join(raw$trans_elec, raw$trans_heavy, by=c("primary_id", "t
 ccs_shocks <- raw$ccs %>%
   crossing(raw$sector_alloc) %>%
   mutate(ccs_shock = ccs * inv_ccs * 1000000) %>%
-  select(primary_id, time_period, RIMSID_64, RIMSID_376,ccs_shock) %>%
-  filter(ccs_shock != 0)
+  select(primary_id, time_period, RIMSID_64, RIMSID_376,ccs_shock) #%>%
+  #filter(ccs_shock != 0)
 
 # ----- Data Save -----
 saveRDS(energy_shocks,paste0("100k_runs_postprocessing/tmp/energy_data_", primary_id, ".rds"))
-saveRDS(shocks, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/power_shocks.rds")
-saveRDS(ind_shocks, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/ind_shocks.rds")
-saveRDS(ccs_shocks, "jobs_data_prep/lsu_code/Water-Institute-Leap-dev/data/intermediate/ccs_shocks.rds") 
+saveRDS(shocks, paste0("100k_runs_postprocessing/tmp/power_shocks_", primary_id, ".rds"))
+saveRDS(ind_shocks, paste0("100k_runs_postprocessing/tmp/ind_shocks_", primary_id, ".rds"))
+saveRDS(ccs_shocks, paste0("100k_runs_postprocessing/tmp/ccs_shocks_", primary_id, ".rds")) 
