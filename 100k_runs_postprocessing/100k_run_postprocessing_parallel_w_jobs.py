@@ -313,6 +313,9 @@ def compute_fgtv_css(
     emissions_avoided_by_sector["capex_ccs"] = (emissions_avoided_by_sector["ccs"] * capex_ccs).fillna(0.0)
     emissions_avoided_by_sector["opex_ccs"]  = (emissions_avoided_by_sector["ccs"] * opex_ccs ).fillna(0.0)
 
+    # if there are inf or -inf make them 0
+    emissions_avoided_by_sector.replace([np.inf, -np.inf], 0, inplace=True)
+
     # ---- Save ----
     out_path = os.path.join(tmp_dir, f"fugitive_emissions_and_ccs_{primary_id_to_decompose}.csv")
     emissions_avoided_by_sector.to_csv(out_path, index=False)
@@ -383,7 +386,9 @@ def compute_scoe(base_case: pd.DataFrame,
                     scoe_fuel_demand_by_sector[f'efficiency_energy_saving_{sector}_{fuel}'] = sector_change_in_fuel_consumed
                     scoe_fuel_demand_by_sector[f'efficiency_capex_{sector}_{fuel}'] = sector_change_in_fuel_consumed*capex_multiplier_efficiency
                     scoe_fuel_demand_by_sector[f'efficiency_opex_{sector}_{fuel}'] = sector_change_in_fuel_consumed*opex_multiplier_efficiency
-
+    
+    #  if there are inf or -inf make them 0
+    scoe_fuel_demand_by_sector.replace([np.inf, -np.inf], 0, inplace=True)
     scoe_fuel_demand_by_sector.to_csv(os.path.join(tmp_dir, f'scoe_{primary_id_to_decompose}.csv'), index=False)
 
 def compute_inen_fuel_efficiency(
@@ -473,6 +478,9 @@ def compute_inen_fuel_efficiency(
                     ind_fuel_demand_by_sector[f'efficiency_energy_saving_{sector}_{fuel}'] = sector_change_in_fuel_consumed
                     ind_fuel_demand_by_sector[f'efficiency_capex_{sector}_{fuel}'] = sector_change_in_fuel_consumed*capex_multiplier_efficiency
                     ind_fuel_demand_by_sector[f'efficiency_opex_{sector}_{fuel}'] = sector_change_in_fuel_consumed*opex_multiplier_efficiency
+
+    #  if there are inf or -inf make them 0
+    ind_fuel_demand_by_sector.replace([np.inf, -np.inf], 0, inplace=True)
 
     # Save results
     ind_fuel_demand_by_sector.to_csv(os.path.join(tmp_dir, f'industrial_energy_cost_{primary_id_to_decompose}.csv'), index=False)
@@ -742,6 +750,13 @@ def compute_transportation(
         "rail_fuel_switch_net_cost_$":         net_series,
     }, index=base_case.index)
 
+    #  if there are inf or -inf make them 0
+    output_trns_elec.replace([np.inf, -np.inf], 0, inplace=True)
+    output_trns_non_elec.replace([np.inf, -np.inf], 0, inplace=True)
+    output_fs.replace([np.inf, -np.inf], 0, inplace=True)
+    output_hd.replace([np.inf, -np.inf], 0, inplace=True)
+    output_rail.replace([np.inf, -np.inf], 0, inplace=True)
+
     output_trns_elec.to_csv(os.path.join(tmp_dir, f"transportation_electric_efficiency_cost_{primary_id_to_decompose}.csv"), index=False)
     output_trns_non_elec.to_csv(os.path.join(tmp_dir, f"transportation_non_electric_efficiency_cost_{primary_id_to_decompose}.csv"), index=False)
     output_fs.to_csv(os.path.join(tmp_dir, f'transportation_light_duty_fuel_switch_cost_{primary_id_to_decompose}.csv'), index=False)
@@ -830,6 +845,10 @@ def compute_energy_production(
     annual_reg = annual_reg_cost.merge(
         annual_reg_prod, on=["primary_id", "time_period"], how="left"
     ).fillna({"production": 0})
+
+    #  if there are inf or -inf make them 0
+    annual_reg.replace([np.inf, -np.inf], 0, inplace=True)
+    annual_pt.replace([np.inf, -np.inf], 0, inplace=True)
 
     # ---------------- save outputs ----------------------------------
     annual_pt.to_csv(os.path.join(tmp_dir, f"baseline_costs_and_production_by_prodtype_{primary_id_to_decompose}.csv"), index=False)
