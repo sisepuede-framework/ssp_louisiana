@@ -629,3 +629,278 @@ class MultiOutputEmissionsPipeline:
             self.plot_feature_importances()
             self.plot_residuals()
             self.plot_actual_vs_predicted()
+
+
+class XGBMultiOutputPipeline:
+    """
+    Lightweight multi-output regressor using only XGBoost (wrapped in MultiOutputRegressor).
+    Prints only TEST metrics. Supports optional log1p/expm1 on targets.
+    """
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        targets: list[str],
+        test_size: float = 0.2,
+        random_state: int = 42,
+    ):
+        self.df = df
+        self.targets = targets
+        self.test_size = test_size
+        self.random_state = random_state
+
+        # train/test
+        self.X_train = self.X_test = None
+        self.y_train = self.y_test = None
+
+        # best XGB params
+        self.best_params: dict = {}
+        # whether to log-transform all targets
+        self._log_transform = False
+
+        # the single pipeline we train/use
+        self.pipeline: Pipeline | None = None
+
+    # ---------- Core ----------
+    def preprocess(self):
+        X = self.df.drop(columns=self.targets)
+        y = self.df[self.targets]
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+            X, y, test_size=self.test_size, random_state=self.random_state
+        )
+
+    def tune_hyperparameters(self, n_iter: int = 30, cv_splits: int = 5, verbose: int = 0):
+        """Randomized search for XGBRegressor hyperparams (wrapped by MultiOutputRegressor)."""
+        if self.X_train is None:
+            raise RuntimeError("Call preprocess() first.")
+
+        param_dist = {
+            "estimator__n_estimators": [200, 500, 800, 1200],
+            "estimator__learning_rate": [0.005, 0.01, 0.05, 0.1],
+            "estimator__max_depth": [3, 5, 7, 9],
+            "estimator__subsample": [0.6, 0.8, 1.0],
+            "estimator__colsample_bytree": [0.5, 0.7, 1.0],
+            "estimator__min_child_weight": [1, 3, 5, 10],
+            "estimator__gamma": [0, 0.1, 0.3, 0.5],
+        }
+
+        base = xgb.XGBRegressor(
+            random_state=self.random_state,
+            tree_method="hist",
+            n_jobs=-1,
+        )
+        mor = MultiOutputRegressor(base)
+        pipe = Pipeline([("model", mor)])
+
+        kf = KFold(n_splits=cv_splits, shuffle=True, random_state=self.random_state)
+        y_tune = np.log1p(self.y_train) if self._log_transform else self.y_train
+
+        search = RandomizedSearchCV(
+            estimator=pipe,
+            param_distributions={f"model__{k}": v for k, v in param_dist.items()},
+            n_iter=n_iter,
+            scoring="neg_mean_absolute_error",
+            cv=kf,
+            random_state=self.random_state,
+            n_jobs=-1,
+            verbose=verbose,
+        )
+        search.fit(self.X_train, y_tune)
+
+        # store params without the "model__estimator__" prefix
+        self.best_params = {
+            k.replace("model__estimator__", ""): v for k, v in search.best_params_.items()
+        }
+
+    def train(self, log_transform: bool = False):
+        """Fit the single XGB multi-output pipeline."""
+        if self.X_train is None:
+            raise RuntimeError("Call preprocess() first.")
+        self._log_transform = log_transform
+
+        xgb_base = xgb.XGBRegressor(
+            **self.best_params,
+            random_state=self.random_state,
+            tree_method="hist",
+            n_jobs=-1,
+        )
+        self.pipeline = Pipeline([("model", MultiOutputRegressor(xgb_base))])
+
+        y_fit = np.log1p(self.y_train) if self._log_transform else self.y_train
+        self.pipeline.fit(self.X_train, y_fit)
+
+    # ---------- Evaluation / CV (TEST-only prints) ----------
+    def _metrics(self, y_true: np.ndarray, y_pred: np.ndarray):
+        mae = mean_absolute_error(y_true, y_pred)
+        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
+        r2 = r2_score(y_true, y_pred)
+        denom = (np.abs(y_true) + np.abs(y_pred)) / 2
+        smape = np.mean(np.where(denom == 0, 0, np.abs(y_true - y_pred) / denom)) * 100
+        return mae, rmse, r2, smape
+
+    def evaluate_test(self):
+        """Print TEST MAE, RMSE, R², SMAPE per target (no train metrics)."""
+        if self.pipeline is None:
+            raise RuntimeError("Call train() first.")
+
+        y_pred = self.pipeline.predict(self.X_test)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+
+        print("\n=== XGB (TEST results) ===")
+        for i, tgt in enumerate(self.targets):
+            y_true = self.y_test.values[:, i]
+            mae, rmse, r2, smape = self._metrics(y_true, y_pred[:, i])
+            print(f"{tgt:30s} → MAE: {mae:.4f} | RMSE: {rmse:.4f} | R²: {r2:.4f} | SMAPE: {smape:.1f}%")
+
+    def cross_validate_per_target(self, cv_splits: int = 5):
+        """
+        For each target, run CV on X_train → y_train[target] and print TEST scores only.
+        """
+        if self.X_train is None:
+            raise RuntimeError("Call preprocess() first.")
+
+        scoring = {
+            "MAE": "neg_mean_absolute_error",
+            "RMSE": "neg_root_mean_squared_error",
+            "R2": "r2",
+        }
+        kf = KFold(n_splits=cv_splits, shuffle=True, random_state=self.random_state)
+
+        # Base pipeline (no refit here)
+        xgb_base = xgb.XGBRegressor(
+            **self.best_params,
+            random_state=self.random_state,
+            tree_method="hist",
+            n_jobs=-1,
+        )
+        pipe = Pipeline([("model", MultiOutputRegressor(xgb_base))])
+
+        print("\n=== Cross-Validation (TEST only) ===")
+        for tgt in self.targets:
+            y = self.y_train[[tgt]]  # keep 2D for MultiOutputRegressor
+            if self._log_transform:
+                y = np.log1p(y)
+
+            results = cross_validate(
+                pipe, self.X_train, y,
+                cv=kf, scoring=scoring, return_train_score=False, n_jobs=-1
+            )
+
+            # Flip signs for neg_ metrics
+            mae_mean = -results["test_MAE"].mean(); mae_std = results["test_MAE"].std()
+            rmse_mean = -results["test_RMSE"].mean(); rmse_std = results["test_RMSE"].std()
+            r2_mean = results["test_R2"].mean(); r2_std = results["test_R2"].std()
+
+            print(
+                f"{tgt:30s} → "
+                f"MAE: {mae_mean:.4f} ± {mae_std:.4f} | "
+                f"RMSE: {rmse_mean:.4f} ± {rmse_std:.4f} | "
+                f"R²: {r2_mean:.4f} ± {r2_std:.4f}"
+            )
+
+    # ---------- Plots ----------
+    def plot_feature_importances(self, top_n: int = 10):
+        """Top-N importances per target from the XGB estimators."""
+        if self.pipeline is None:
+            raise RuntimeError("Call train() first.")
+        mor = self.pipeline.named_steps["model"]
+        feature_names = self.X_train.columns
+
+        n_targets = len(self.targets)
+        fig, axes = plt.subplots(n_targets, 1, figsize=(8, 4 * n_targets))
+        if n_targets == 1:
+            axes = [axes]
+
+        for i, tgt in enumerate(self.targets):
+            imp = mor.estimators_[i].feature_importances_
+            idx = np.argsort(imp)[-top_n:][::-1]
+            axes[i].barh(feature_names[idx][::-1], imp[idx][::-1])
+            axes[i].set_title(f"Top {top_n} Importances for '{tgt}'")
+            axes[i].set_xlabel("Importance")
+
+        plt.tight_layout()
+        plt.show()
+
+    def plot_residuals(self):
+        """Residual (true − pred) vs predicted for each target (TEST set)."""
+        if self.pipeline is None:
+            raise RuntimeError("Call train() first.")
+        mor = self.pipeline.named_steps["model"]
+        y_pred = mor.predict(self.X_test)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+        residuals = self.y_test.values - y_pred
+
+        n = len(self.targets)
+        fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
+        if n == 1:
+            axes = [axes]
+
+        for i, tgt in enumerate(self.targets):
+            axes[i].scatter(y_pred[:, i], residuals[:, i], alpha=0.6)
+            axes[i].axhline(0, color="k", linestyle="--")
+            axes[i].set_xlabel("Predicted")
+            axes[i].set_ylabel("Residual")
+            axes[i].set_title(f"Residuals vs Predicted • {tgt}")
+
+        plt.tight_layout()
+        plt.show()
+
+    def plot_actual_vs_predicted(self):
+        """Actual vs predicted with 45° line (TEST set)."""
+        if self.pipeline is None:
+            raise RuntimeError("Call train() first.")
+        mor = self.pipeline.named_steps["model"]
+        y_pred = mor.predict(self.X_test)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+
+        n = len(self.targets)
+        fig, axes = plt.subplots(1, n, figsize=(5 * n, 5))
+        if n == 1:
+            axes = [axes]
+
+        for i, tgt in enumerate(self.targets):
+            y_true = self.y_test.values[:, i]
+            mn, mx = min(y_true.min(), y_pred[:, i].min()), max(y_true.max(), y_pred[:, i].max())
+            axes[i].scatter(y_true, y_pred[:, i], alpha=0.6)
+            axes[i].plot([mn, mx], [mn, mx], "k--", linewidth=1)
+            axes[i].set_xlabel("Actual")
+            axes[i].set_ylabel("Predicted")
+            axes[i].set_title(f"Actual vs Predicted • {tgt}")
+
+        plt.tight_layout()
+        plt.show()
+
+    # ---------- Predict ----------
+    def predict(self, df_new: pd.DataFrame) -> pd.DataFrame:
+        """Predict all targets on df_new (must contain the same feature columns)."""
+        if self.pipeline is None:
+            raise RuntimeError("Call train() first.")
+        X_new = df_new[self.X_train.columns]
+        y_pred = self.pipeline.predict(X_new)
+        if self._log_transform:
+            y_pred = np.expm1(y_pred)
+        return pd.DataFrame(y_pred, columns=self.targets, index=X_new.index)
+
+    # ---------- Orchestrator ----------
+    def run(
+        self,
+        tune: bool = True,
+        log_transform: bool = False,
+        cv_splits: int = 5,
+        plot_figures: bool = True,
+        verbose_search: int = 0,
+    ):
+        self._log_transform = log_transform
+        self.preprocess()
+        if tune:
+            self.tune_hyperparameters(cv_splits=cv_splits, verbose=verbose_search)
+        self.train(log_transform=log_transform)
+        self.evaluate_test()
+        if cv_splits and cv_splits > 1:
+            self.cross_validate_per_target(cv_splits=cv_splits)
+        if plot_figures:
+            self.plot_feature_importances()
+            self.plot_residuals()
+            self.plot_actual_vs_predicted()
