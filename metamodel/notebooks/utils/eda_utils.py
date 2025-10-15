@@ -193,7 +193,14 @@ class EDAUtils:
         return outlier_pct[outlier_pct > 0].to_dict()
     
     @staticmethod
-    def get_target_var_corr(df, target_var, threshold=0.1, exclude_cols=None, return_dict=False):
+    def get_target_var_corr(
+        df,
+        target_var,
+        threshold=0.1,
+        exclude_cols=None,
+        return_dict=False,
+        method="pearson"
+    ):
         """
         Print and optionally return correlations of all columns with the target variable,
         excluding specified columns.
@@ -204,6 +211,7 @@ class EDAUtils:
             threshold: float, minimum absolute correlation to report
             exclude_cols: list of str, columns to exclude from output (including target_var itself)
             return_dict: bool, whether to return the dict of correlations
+            method: str, correlation method ('pearson' or 'spearman')
 
         Returns:
             dict or None
@@ -213,21 +221,27 @@ class EDAUtils:
         exclude_cols = set(exclude_cols)
         exclude_cols.add(target_var)
 
-        corr = df.corr()[target_var].abs()
-        corr = corr.drop(labels=exclude_cols, errors='ignore')
+        # Compute correlation matrix using chosen method
+        if method not in ("pearson", "spearman"):
+            raise ValueError("method must be 'pearson' or 'spearman'")
+
+        corr = df.corr(method=method)[target_var].abs()
+        corr = corr.drop(labels=exclude_cols, errors="ignore")
+
         corr_dict = corr[corr > threshold].sort_values(ascending=False).to_dict()
 
-        print("\n" + "="*50)
-        print(f"Correlation with target variable '{target_var}' (threshold: {threshold}):")
-        print("-"*50)
+        print("\n" + "=" * 50)
+        print(f"{method.capitalize()} correlation with target variable '{target_var}' (threshold: {threshold}):")
+        print("-" * 50)
         for col, value in corr_dict.items():
             print(f"{col:<30} : {value:.4f}")
-        print("="*50 + "\n")
+        print("=" * 50 + "\n")
 
         if return_dict:
             return corr_dict
         else:
             return None
+
     @staticmethod
     def check_for_multicollinearity(df, threshold=0.8):
         corr_matrix = df.corr().abs()
