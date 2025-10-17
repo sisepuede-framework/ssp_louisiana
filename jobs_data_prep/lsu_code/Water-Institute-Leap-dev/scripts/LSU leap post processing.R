@@ -57,6 +57,6 @@ for(id in primaries){
 output_all<-as.matrix(industry_output[vars_to_keep])+as.matrix(ccs_output[vars_to_keep]+as.matrix(power_output[vars_to_keep]))
 
 output<-cbind(ccs_output[,-which(colnames(ccs_output) %in% vars_to_keep)], output_all)
-write.csv(output, 'lsu_output_1000_ensemble.csv', row.names=F)
+write.csv(output, 'lsu_output_1000_ensemble_10_14.csv', row.names=F)
 
 
