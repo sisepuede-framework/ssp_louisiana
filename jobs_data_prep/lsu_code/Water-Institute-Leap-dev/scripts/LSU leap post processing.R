@@ -7,6 +7,7 @@ vars_to_keep<-c('la_value_direct',
                 'la_earnings_induced',
                 'la_employment_direct',
                 'la_employment_indirect',
+                'la_employment_induced',
                 'la_employment_total')
 
 ccs_output<-data.frame()
@@ -54,9 +55,15 @@ for(id in primaries){
   industry_output<-rbind(industry_output, temp)
 }
 
+baseline_earnings_per_job<-baseline$power_imp
+
+
 output_all<-as.matrix(industry_output[vars_to_keep])+as.matrix(ccs_output[vars_to_keep]+as.matrix(power_output[vars_to_keep]))
 
 output<-cbind(ccs_output[,-which(colnames(ccs_output) %in% vars_to_keep)], output_all)
-write.csv(output, 'lsu_output_1000_ensemble_10_14.csv', row.names=F)
+
+
+
+write.csv(output, 'lsu_output_1000_ensemble_10_14_updated.csv', row.names=F)
 
 
