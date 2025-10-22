@@ -1,2 +1,6 @@
 ALL TABLES (EXCEL):
 	SOURCE:		https://www.eia.gov/electricity/data.php#gencapacity
+
+
+SEP Tables for LA.xlsx (State Electricity Profiles)
+	https://www.eia.gov/electricity/state/louisiana/
