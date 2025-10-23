@@ -55,15 +55,40 @@ for(id in primaries){
   industry_output<-rbind(industry_output, temp)
 }
 
-baseline_earnings_per_job<-baseline$power_imp
-
-
 output_all<-as.matrix(industry_output[vars_to_keep])+as.matrix(ccs_output[vars_to_keep]+as.matrix(power_output[vars_to_keep]))
 
 output<-cbind(ccs_output[,-which(colnames(ccs_output) %in% vars_to_keep)], output_all)
 
+power_sector_direct_salary<-mean(baseline$power_impact$la_earnings_direct/baseline$power_impact$la_employment_direct)
+power_sector_indirect_salary<-mean(baseline$power_impact$la_earnings_indirect/baseline$power_impact$la_employment_indirect)
+industry_sector_direct_salary<-mean(baseline$industry_impact$la_earnings_direct/baseline$industry_impact$la_employment_direct)
+industry_sector_indirect_salary<-mean(baseline$industry_impact$la_earnings_indirect/baseline$industry_impact$la_employment_indirect)
+induced_salary<-mean(baseline$power_impact$la_earnings_induced/baseline$power_impact$la_employment_induced)
 
+total_new_jobs<-sapply(power_output$la_employment_induced, max, 0)+
+  sapply(power_output$la_employment_indirect, max, 0)+
+  sapply(power_output$la_employment_direct, max, 0)+
+  sapply(industry_output$la_employment_induced, max, 0)+
+  sapply(industry_output$la_employment_indirect, max, 0)+
+  sapply(industry_output$la_employment_direct, max, 0)+
+  sapply(ccs_output$la_employment_induced, max, 0)+
+  sapply(ccs_output$la_employment_indirect, max, 0)+
+  sapply(ccs_output$la_employment_direct, max, 0)
+  
+total_new_earnings<-sapply((induced_salary*power_output$la_employment_induced), max, 0)+
+  sapply((power_sector_indirect_salary*power_output$la_employment_indirect), max, 0)+
+  sapply((power_sector_direct_salary*power_output$la_employment_direct), max, 0)+
+  sapply((induced_salary*industry_output$la_employment_induced), max, 0)+
+  sapply((industry_sector_indirect_salary*industry_output$la_employment_indirect), max, 0)+
+  sapply((industry_sector_direct_salary*industry_output$la_employment_direct), max, 0)+
+  sapply((induced_salary*ccs_output$la_employment_induced), max, 0)+
+  sapply((industry_sector_indirect_salary*ccs_output$la_employment_indirect), max, 0)+
+  sapply((industry_sector_direct_salary*ccs_output$la_employment_direct), max, 0)
 
-write.csv(output, 'lsu_output_1000_ensemble_10_14_updated.csv', row.names=F)
+output$average_salary_jobs_added<-total_new_earnings/total_new_jobs
+output$average_salary_jobs_added[is.na(output$average_salary_jobs_added)]<-0
+
+write.csv(output, 'lsu_output_1000_ensemble_10_22.csv', row.names=F)
+
 
 
