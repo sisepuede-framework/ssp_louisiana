@@ -55,7 +55,7 @@ dim(data)
 
 #apply this differences to every combination of gas and sector
 #te_all$sector_gas <- paste(te_all$Subsector,te_all$Gas,sep="-")
-te_all$sector_gas <- paste(row.names(te_all),te_all$Subsector,te_all$Gas,sep="-")
+te_all$sector_gas <- paste(row.names(te_all),te_all$ssp_subsector,te_all$Gas,sep="-")
 sector_gas_all <- unique(te_all$sector_gas)
 
 for (w in 1:length(sector_gas_all))
@@ -90,10 +90,11 @@ round(sum(data [data$time_period==time_period_ref & data$Index==ref_inds,tv1] ),
 }
 
 #estimate sector totals 
-subsectors <- unique(te_all$Subsector)
+subsectors <- unique(te_all$ssp_subsector)
 for (a in 1:length(subsectors))
 {
-subsector_vars <- unlist(lapply(subset(te_all,Subsector==subsectors[a])$Vars,function(x){strsplit(x,":")}))
+ #a<-1
+subsector_vars <- unlist(lapply(subset(te_all,ssp_subsector==subsectors[a])$Vars,function(x){strsplit(x,":")}))
 if (length(subsector_vars)>1)  { 
 data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- rowSums(data[,subsector_vars])
 } else {data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- data[,subsector_vars]}
@@ -102,7 +103,7 @@ data[,paste0("emission_co2e_subsector_total_",subsectors[a])] <- rowSums(data[,s
 #print file  
 data$Index <- NULL 
 dim(data)
-write.csv(data,paste0(dir.output,tregion,"_",run,".csv"),row.names=FALSE)
+fwrite(data,paste0(dir.output,tregion,"_",run,".csv"),row.names=FALSE)
 
 rm(data)
 print(paste0(dir.output,tregion,"_",run,".csv"))
